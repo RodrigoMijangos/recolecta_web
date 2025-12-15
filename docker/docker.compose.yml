@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  database:
+    image: mariadb:10.11
+    container_name: mariadb_db
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD} 
+      MARIADB_DATABASE: ${DB_NAME}
+      MARIADB_USER: ${DB_USER}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - mariadb_data:/var/lib/mysql 
+    networks:
+      - app_internal_net
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: redis_cache
+    restart: always
+    volumes:
+      - redis_data:/data 
+    command: redis-server --appendonly yes
+    networks:
+      - app_internal_net
+
+  backend:
+    image: golang:1.21-alpine 
+    container_name: go_backend
+    restart: always
+    environment:
+      DB_HOST: database 
+      REDIS_HOST: redis
+    expose: 
+      - "8080"
+    networks:
+      app_internal_net:
+        # Define una IP fija o permite acceso a Internet si es necesario.
+        # Por defecto, este contenedor TENDRÁ salida a Internet si no se restringe
+        # con un firewall externo. En Docker Compose, si el contenedor 
+        # necesita descargar algo (como dependencias en el build), la salida es default.
+      
+    depends_on:
+      - database
+      - redis
+
+  proxy:
+    image: nginx:stable-alpine
+    container_name: nginx_proxy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro 
+      - ./frontend/dist:/usr/share/nginx/html:ro 
+    networks:
+      - app_internal_net
+    depends_on:
+      - backend
+
+volumes:
+  mariadb_data:
+  redis_data: 
+
+networks:
+  app_internal_net:
+    driver: bridge
+    internal: true
