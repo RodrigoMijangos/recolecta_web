@@ -27,7 +27,8 @@ recolecta_web/
 │   │   ├── 🤖 AUTOMATIZACION_PROJECT_FIELDS.md  Auto-setup fields
 │   │   ├── 📋 PROJECT_SETUP.md ......... Setup inicial
 │   │   ├── 🏗️ ROADMAP_SETUP.md ....... Roadmap setup
-│   │   └── 🎫 PLANTILLAS_ISSUES.md .. Templates issues
+│   │   ├── 🎫 PLANTILLAS_ISSUES.md .. Templates issues
+│   │   └── 📝 PLANTILLA_UNIVERSAL_ISSUES.md .. Plantilla universal ⭐
 │   │
 │   └── setup/ (Setup y configuración)
 │       ├── 🚀 SETUP_COMPLETADO.md ... Resumen ejecutivo
@@ -45,8 +46,9 @@ recolecta_web/
 ### Si eres **Nuevo en el Proyecto**
 1. Lee [README.md](./README.md) (5 min) ⭐ AQUÍ
 2. Lee [workflow/WORKFLOW_QUICK_CHECKLIST.md](./workflow/WORKFLOW_QUICK_CHECKLIST.md) (5 min)
-3. Ejecuta `.\docs\workflow\workflow-submodules.ps1 -action status` para ver estado
-4. Crea un Issue de prueba y sigue el flujo
+3. Lee [project/PLANTILLA_UNIVERSAL_ISSUES.md](./project/PLANTILLA_UNIVERSAL_ISSUES.md) para crear issues correctamente
+4. Ejecuta `.\docs\workflow\workflow-submodules.ps1 -action status` para ver estado
+5. Crea un Issue de prueba siguiendo la plantilla universal
 
 ### Si quieres **Entender Conceptos**
 1. Lee [workflow/TRAZABILIDAD_EXPLICADO.md](./workflow/TRAZABILIDAD_EXPLICADO.md) (15 min)

@@ -1,5 +1,7 @@
 # Configuración del GitHub Project - Roadmap Notificaciones
 
+> **📋 Antes de crear issues:** Lee [PLANTILLA_UNIVERSAL_ISSUES.md](PLANTILLA_UNIVERSAL_ISSUES.md) para entender cómo estructurar tus issues correctamente.
+
 ## Instrucciones para crear el Project con Tablero Visual
 
 ### Paso 1: Crear el Project
@@ -27,7 +29,11 @@ Los issues deben distribuirse de la siguiente manera:
 #### Repositorio: `frontend` (Frontend React)
 - ✅ FASE 4 (Issues #11-13): FCM frontend, Dashboard, token FCM
 
-### Paso 3: Transferir Issues (Manual)
+### Paso 3: Crear Issues Usando la Plantilla Universal
+
+**Recomendación:** Antes de crear cada issue, revisa [PLANTILLA_UNIVERSAL_ISSUES.md](PLANTILLA_UNIVERSAL_ISSUES.md) y usa la estructura propuesta para mantener consistencia.
+
+### Paso 4: Transferir Issues (Manual)
 
 **Nota:** GitHub CLI no soporta transferencia automática. Usa esto como referencia:
 

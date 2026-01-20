@@ -2,6 +2,39 @@
 
 Este archivo contiene todas las plantillas de issues creados para referencia y reutilización.
 
+> **📋 Ver también:** [Plantilla Universal de Issues](PLANTILLA_UNIVERSAL_ISSUES.md) - Usa esta plantilla para crear nuevos issues de forma consistente.
+
+---
+
+## Guía Rápida: Cómo Usar la Plantilla Universal
+
+### 1. **Preparación**
+   - Abre [PLANTILLA_UNIVERSAL_ISSUES.md](PLANTILLA_UNIVERSAL_ISSUES.md)
+   - Copia el contenido del bloque de código markdown
+
+### 2. **Crear el Issue**
+   - Ve a GitHub → "Issues" → "New issue"
+   - Pega la plantilla en el campo de descripción
+   - Completa solo las secciones relevantes para tu tipo de issue
+
+### 3. **Completar Secciones**
+   | Tipo | Secciones Obligatorias |
+   |------|------------------------|
+   | **Bug** | Resumen, Tipo, Pasos, Comportamiento esperado, Comportamiento observado, Entorno |
+   | **Feature** | Resumen, Tipo, Criterios de aceptación, Impacto y prioridad |
+   | **Task** | Resumen, Tipo, Criterios de aceptación |
+   | **Docs** | Resumen, Tipo, Descripción del cambio |
+   | **Pregunta** | Resumen, Tipo, Contexto |
+
+### 4. **Agregar Etiquetas**
+   - `bug`, `feature`, `enhancement`, `documentation`, `question`
+   - `priority-high`, `priority-medium`, `priority-low`
+   - `backend`, `frontend`, `infrastructure`, `database`
+
+### 5. **Vinculación**
+   - Usa `#numero-del-issue` para enlazar issues relacionados
+   - Usa `Closes #numero` para auto-cerrar desde PRs
+
 ---
 
 ## FASE 1: Configuración Base

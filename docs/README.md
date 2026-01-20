@@ -40,7 +40,8 @@ docs/
 │   ├── AUTOMATIZACION_PROJECT_FIELDS.md  Auto-setup custom fields
 │   ├── PROJECT_SETUP.md .............. Setup inicial
 │   ├── ROADMAP_SETUP.md ............ Roadmap setup
-│   └── PLANTILLAS_ISSUES.md ....... Templates para issues
+│   ├── PLANTILLAS_ISSUES.md ....... Templates para issues
+│   └── PLANTILLA_UNIVERSAL_ISSUES.md  Plantilla universal ⭐
 │
 └── setup/ ............................. Setup y configuración
     ├── SETUP_COMPLETADO.md ......... Resumen ejecutivo
@@ -65,6 +66,9 @@ docs/
 
 ### "Quiero escribir buenos Pull Requests"
 → [workflow/PLANTILLA_PR.md](./workflow/PLANTILLA_PR.md) (5 min)
+
+### "Quiero crear issues bien estructurados"
+→ [project/PLANTILLA_UNIVERSAL_ISSUES.md](./project/PLANTILLA_UNIVERSAL_ISSUES.md) (5 min) ⭐ IMPORTANTE
 
 ### "Quiero automatizar los custom fields"
 → [project/AUTOMATIZACION_PROJECT_FIELDS.md](./project/AUTOMATIZACION_PROJECT_FIELDS.md) (15 min)

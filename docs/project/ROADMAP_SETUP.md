@@ -1,10 +1,13 @@
 # 📊 Roadmap Completo - Sistema de Notificaciones con Redis y FCM
 
+> **📋 Antes de crear issues:** Lee [PLANTILLA_UNIVERSAL_ISSUES.md](PLANTILLA_UNIVERSAL_ISSUES.md) para estructura consistente
+
 ## ✅ Estado Actual
 
 - ✅ **24 issues creados** en `recolecta_web`
 - ✅ **25 labels** configurados
 - ✅ Roadmap documentado en 7 fases
+- ✅ **Plantilla Universal de Issues disponible** para estructura consistente
 - ⏳ **Próximo:** Crear GitHub Project y transferir issues a repositorios
 
 ---
