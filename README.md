@@ -64,15 +64,25 @@ Copia el archivo de ejemplo y edítalo con tus valores:
 cp .env.example .env
 ```
 
+**⚠️ IMPORTANTE:** En todos los documentos verás placeholders como `<usuario>`, `<tu_contraseña_segura>`, etc. Estos deben ser **reemplazados** con los valores que definas en tu archivo `.env`.
+
 **Variables principales:**
 
 ```env
 # Backend
 API_PORT=8080
-DATABASE_URL=postgresql://user:password@db:5432/recolecta
+DATABASE_URL=postgresql://<usuario>:<contraseña>@db:5432/<nombre_db>
 
 # Frontend
 VITE_API_URL=http://localhost:8080
+
+# PostgreSQL
+DB_USER=<tu_usuario>
+DB_PASSWORD=<tu_contraseña_segura>
+DB_NAME=<nombre_base_datos>
+
+# Redis
+REDIS_PASSWORD=<tu_contraseña_redis_segura>
 
 # Docker
 ENVIRONMENT=development
@@ -81,72 +91,223 @@ ENVIRONMENT=development
 #### 3️⃣ Iniciar los servicios
 
 ```bash
-# Desarrollo
-docker-compose -f docker/docker.compose.dev.yml up -d
+# Producción (con archivo .env)
+docker compose -f docker/docker.compose.yml --env-file .env up -d
 
 # Ver logs en tiempo real
-docker-compose -f docker/docker.compose.dev.yml logs -f
+docker compose -f docker/docker.compose.yml logs -f
+
+# Ver logs de un servicio específico
+docker compose -f docker/docker.compose.yml logs -f database
 ```
 
 **✅ Listo!** Tu aplicación estará disponible en:
 
-- 🌐 **Frontend:** http://localhost:3000
-- 🔌 **Backend API:** http://localhost:8080
-- 📊 **Nginx:** http://localhost
+- 🌐 **Frontend:** http://localhost (Nginx sirviendo placeholder)
+- 🗄️ **PostgreSQL:** localhost:5432
+- 🔴 **Redis:** localhost:6379
+- 🔌 **Backend API:** Por configurar
 
 ---
 
 ## 📦 Comandos Docker Útiles
 
-### Desarrollo
+### 🚀 Inicio y Detención
 
 ```bash
-# Iniciar servicios en background
-docker-compose -f docker/docker.compose.dev.yml up -d
+# Iniciar servicios (usando .env automáticamente)
+docker compose -f docker/docker.compose.yml --env-file .env up -d
 
-# Ver logs en vivo
-docker-compose -f docker/docker.compose.dev.yml logs -f
-
-# Ver solo logs del servicio específico
-docker-compose -f docker/docker.compose.dev.yml logs -f frontend
+# Iniciar sin detach (ver logs en vivo)
+docker compose -f docker/docker.compose.yml --env-file .env up
 
 # Detener servicios
-docker-compose -f docker/docker.compose.dev.yml down
+docker compose -f docker/docker.compose.yml down
 
-# Limpiar volúmenes (CUIDADO: borra datos)
-docker-compose -f docker/docker.compose.dev.yml down -v
+# Detener y eliminar volúmenes (⚠️ BORRA DATOS)
+docker compose -f docker/docker.compose.yml down -v
 
-# Reiniciar un servicio
-docker-compose -f docker/docker.compose.dev.yml restart backend
+# Recrear contenedores (cuando cambies docker-compose.yml)
+docker compose -f docker/docker.compose.yml --env-file .env up -d --force-recreate
+
+# Rebuild imágenes (cuando cambies Dockerfiles)
+docker compose -f docker/docker.compose.yml build --no-cache
+docker compose -f docker/docker.compose.yml --env-file .env up -d
 ```
 
-### Producción
+### 📊 Monitoreo
 
 ```bash
-# Construcción e inicio
-docker-compose -f docker/docker.compose.yml up -d
-
 # Ver estado de servicios
-docker ps
+docker compose -f docker/docker.compose.yml ps
 
-# Actualizar código (recrear contenedores)
-docker-compose -f docker/docker.compose.yml up -d --pull always
-```
+# Ver logs en tiempo real
+docker compose -f docker/docker.compose.yml logs -f
 
-### Debugging
+# Ver logs de un servicio específico
+docker compose -f docker/docker.compose.yml logs -f database
+docker compose -f docker/docker.compose.yml logs -f redis
+docker compose -f docker/docker.compose.yml logs -f proxy
 
-```bash
-# Ejecutar comando dentro de contenedor
-docker-compose -f docker/docker.compose.dev.yml exec backend bash
-
-# Inspeccionar contenedor
-docker inspect <container-id>
+# Ver últimas N líneas de logs
+docker compose -f docker/docker.compose.yml logs --tail=50 database
 
 # Ver estadísticas de recursos
 docker stats
+```
 
-# Verificar conectividad
-docker-compose -f docker/docker.compose.dev.yml exec frontend ping backend
+### 🔍 Debugging y Acceso
+
+```bash
+# Ejecutar comando en contenedor (shell interactivo)
+docker compose -f docker/docker.compose.yml exec database sh
+docker compose -f docker/docker.compose.yml exec redis sh
+docker compose -f docker/docker.compose.yml exec proxy sh
+
+# Conectar a PostgreSQL (usa tus valores del .env)
+docker compose -f docker/docker.compose.yml exec database psql -U <usuario> -d <nombre_db>
+
+# Ejemplo: listar usuarios
+docker compose -f docker/docker.compose.yml exec database psql -U <usuario> -d <nombre_db> -c "\du"
+
+# Ejemplo: listar bases de datos
+docker compose -f docker/docker.compose.yml exec database psql -U <usuario> -d <nombre_db> -c "\l"
+
+# Conectar a Redis CLI (usa tu REDIS_PASSWORD del .env)
+docker compose -f docker/docker.compose.yml exec redis redis-cli -a <tu_contraseña_redis>
+
+# Ejemplo: ping a Redis
+docker compose -f docker/docker.compose.yml exec redis redis-cli -a <tu_contraseña_redis> PING
+
+# Verificar configuración de Nginx
+docker compose -f docker/docker.compose.yml exec proxy nginx -t
+```
+
+### 🔧 Gestión de Datos
+
+```bash
+# Backup de PostgreSQL (usa tus valores del .env)
+docker compose -f docker/docker.compose.yml exec database pg_dump -U <usuario> <nombre_db> > backup_$(date +%Y%m%d).sql
+
+# Restaurar PostgreSQL (PowerShell)
+Get-Content backup.sql | docker compose -f docker/docker.compose.yml exec -T database psql -U <usuario> -d <nombre_db>
+
+# Limpiar datos de Redis (usa tu REDIS_PASSWORD)
+docker compose -f docker/docker.compose.yml exec redis redis-cli -a <tu_contraseña_redis> FLUSHALL
+
+# Ver volúmenes
+docker volume ls
+
+# Eliminar volumen específico (⚠️ BORRA DATOS)
+docker volume rm docker_postgres_data
+```
+
+### 🔄 Variables de Entorno
+
+```bash
+# Ver variables cargadas en contenedor
+docker compose -f docker/docker.compose.yml exec database env | findstr POSTGRES
+docker compose -f docker/docker.compose.yml exec redis env | findstr REDIS
+
+# Validar archivo .env antes de levantar
+Get-Content .env | Select-String -Pattern "PASSWORD|USER|PORT"
+
+# Verificar qué archivo compose está usando
+docker compose -f docker/docker.compose.yml config
+```
+
+### 🧹 Limpieza
+
+```bash
+# Eliminar contenedores detenidos
+docker container prune
+
+# Eliminar imágenes no usadas
+docker image prune
+
+# Eliminar volúmenes no usados
+docker volume prune
+
+# Limpieza completa (⚠️ CUIDADO)
+docker system prune -a --volumes
+```
+
+### 🌐 Verificación de Servicios
+
+```bash
+# Verificar PostgreSQL desde el host
+# (Windows PowerShell - requiere psql instalado)
+# Reemplaza valores con los de tu .env
+$env:PGPASSWORD="<tu_contraseña>"; psql -h localhost -p 5432 -U <usuario> -d <nombre_db> -c "SELECT version();"
+
+# Verificar Nginx
+curl http://localhost
+curl http://localhost/health
+
+# Verificar conectividad entre contenedores
+docker compose -f docker/docker.compose.yml exec proxy ping database
+docker compose -f docker/docker.compose.yml exec proxy ping redis
+```
+
+---
+
+## 💡 Consejos para usar Docker Compose
+
+### 🎯 Sobre `--env-file .env`
+
+- **¿Es necesario?** Técnicamente Docker Compose busca `.env` automáticamente en el directorio actual, pero es **mejor práctica** especificarlo explícitamente para:
+  - Claridad en qué archivo se está usando
+  - Evitar confusiones si hay múltiples archivos `.env`
+  - Facilitar scripts automatizados
+
+- **Alternativas:**
+  ```bash
+  # Opción 1: Dejar que Docker Compose lo busque automáticamente
+  docker compose -f docker/docker.compose.yml up -d
+  
+  # Opción 2: Especificar explícitamente (recomendado)
+  docker compose -f docker/docker.compose.yml --env-file .env up -d
+  
+  # Opción 3: Múltiples archivos .env
+  docker compose -f docker/docker.compose.yml --env-file .env --env-file .env.local up -d
+  ```
+
+### ⚡ Atajos útiles
+
+```bash
+# Alias para PowerShell (agregar a $PROFILE)
+function dcu { docker compose -f docker/docker.compose.yml --env-file .env up -d }
+function dcd { docker compose -f docker/docker.compose.yml down }
+function dcl { docker compose -f docker/docker.compose.yml logs -f }
+function dcp { docker compose -f docker/docker.compose.yml ps }
+
+# Usar:
+dcu      # levanta servicios
+dcd      # detiene servicios
+dcl      # ver logs
+dcp      # ver estado
+```
+
+### 🔐 Seguridad
+
+- ⚠️ **NUNCA** hagas commit del archivo `.env` con credenciales reales
+- ✅ Usa `.env.example` como plantilla
+- ✅ En producción, usa Docker secrets o variables de entorno del sistema
+- ✅ Cambia las contraseñas por defecto antes de producción
+
+---
+
+## 📦 Estructura de Docker
+
+```
+docker/
+├── docker.compose.yml          # Configuración principal
+├── docker.compose.dev.yml      # Configuración de desarrollo (WIP)
+├── Dockerfile.nginx            # Imagen personalizada de Nginx
+├── frontend-placeholder/       # HTML temporal mientras se configura frontend
+│   └── index.html
+└── nginx/
+    └── nginx.conf/             # Configuraciones adicionales (futuro)
 ```
 
 ---
@@ -245,41 +406,206 @@ El backend se reinicia automáticamente con hot-reload (depende de configuració
 
 ---
 
+---
+
+## ✅ Verificar Instalación
+
+Después de ejecutar `docker compose -f docker/docker.compose.yml --env-file .env up -d`, verifica que todo funciona:
+
+### 1. Estado de Contenedores
+
+```bash
+docker compose -f docker/docker.compose.yml ps
+```
+
+Deberías ver 3 contenedores **Up**:
+- `postgres_db` - En puerto 5432
+- `redis_cache` - En puerto 6379
+- `nginx_proxy` - En puertos 80 y 443
+
+### 2. Servicios Web
+
+Abre tu navegador en:
+- **http://localhost** - Deberías ver la página placeholder "Recolecta Web - En Construcción"
+- **http://localhost/health** - Debería responder "healthy"
+
+O desde terminal:
+```bash
+curl http://localhost
+curl http://localhost/health
+```
+
+### 3. PostgreSQL
+
+```bash
+# Verificar conexión (reemplaza <usuario> y <nombre_db> con tus valores del .env)
+docker compose -f docker/docker.compose.yml exec database psql -U <usuario> -d <nombre_db> -c "SELECT version();"
+
+# Listar usuarios
+docker compose -f docker/docker.compose.yml exec database psql -U <usuario> -d <nombre_db> -c "\du"
+
+# Desde herramientas externas (pgAdmin, DBeaver, etc.):
+# Host: localhost
+# Port: 5432
+# User: <tu_usuario del .env>
+# Password: <tu_contraseña del .env>
+# Database: <nombre_base_datos del .env>
+```
+
+### 4. Redis
+
+```bash
+# Ping a Redis (reemplaza <password> con tu REDIS_PASSWORD del .env)
+docker compose -f docker/docker.compose.yml exec redis redis-cli -a <tu_contraseña_redis> PING
+
+# Debería responder: PONG
+```
+
+### 5. Logs
+
+```bash
+# Si algo falla, revisa los logs
+docker compose -f docker/docker.compose.yml logs
+```
+
+---
+
 ## 🐛 Solución de Problemas
 
 ### ❌ Puerto ya en uso
 
 ```bash
-# Encontrar qué proceso usa el puerto
-netstat -tulpn | grep :3000
+# Windows - Encontrar qué proceso usa el puerto
+netstat -ano | findstr :5432
+netstat -ano | findstr :6379
+netstat -ano | findstr :80
 
-# O cambiar el puerto en docker-compose.yml
+# Matar proceso (reemplaza PID con el número que encontraste)
+taskkill /PID <PID> /F
+
+# O cambiar el puerto en .env
+DB_PORT=5433
+REDIS_PORT=6380
+NGINX_PORT=8080
 ```
 
-### ❌ Permisos denegados en Docker
+### ❌ No se puede conectar a PostgreSQL
+
+**Problema:** "connection refused" o no puedes conectar desde herramientas externas
 
 ```bash
-# Agregar usuario al grupo docker (Linux)
+# 1. Verificar que el contenedor está corriendo
+docker compose -f docker/docker.compose.yml ps
+
+# 2. Verificar que el puerto está expuesto
+docker compose -f docker/docker.compose.yml ps | findstr postgres
+
+# Deberías ver: 0.0.0.0:5432->5432/tcp
+
+# 3. Verificar variables de entorno dentro del contenedor
+docker compose -f docker/docker.compose.yml exec database env | findstr POSTGRES
+
+# 4. Probar conexión desde dentro del contenedor (usa tus valores del .env)
+docker compose -f docker/docker.compose.yml exec database psql -U <usuario> -d <nombre_db> -c "SELECT 1;"
+
+# 5. Si funciona desde dentro pero no desde fuera, es firewall
+# Windows: Agregar regla en Windows Defender Firewall
+```
+
+### ❌ Redis: "NOAUTH Authentication required"
+
+**Problema:** No puedes conectar a Redis o te pide autenticación
+
+```bash
+# Verificar que el password está configurado (debería mostrar tu REDIS_PASSWORD)
+docker compose -f docker/docker.compose.yml exec redis redis-cli CONFIG GET requirepass
+
+# Conectar con password (usa tu REDIS_PASSWORD del .env)
+docker compose -f docker/docker.compose.yml exec redis redis-cli -a <tu_contraseña_redis> PING
+
+# Si no funciona, recrear el contenedor
+docker compose -f docker/docker.compose.yml down
+docker compose -f docker/docker.compose.yml --env-file .env up -d --force-recreate
+```
+
+### ❌ Variables de entorno no se cargan
+
+**Problema:** Los servicios usan valores por defecto en lugar de los de `.env`
+
+```bash
+# 1. Verificar que el archivo .env existe
+Test-Path .env
+
+# 2. Ver contenido del .env (sin mostrar passwords en pantalla)
+Get-Content .env | Select-String -Pattern "USER|PORT|HOST" -NotMatch "PASSWORD"
+
+# 3. Validar sintaxis del docker-compose.yml
+docker compose -f docker/docker.compose.yml config
+
+# 4. Recrear servicios asegurando que cargue .env
+docker compose -f docker/docker.compose.yml down
+docker compose -f docker/docker.compose.yml --env-file .env up -d
+
+# 5. Verificar variables dentro del contenedor
+docker compose -f docker/docker.compose.yml exec database env | findstr POSTGRES
+docker compose -f docker/docker.compose.yml exec redis env | findstr REDIS
+```
+
+### ❌ Nginx muestra 502 Bad Gateway o 503
+
+**Problema:** Nginx no puede conectar al backend
+
+```bash
+# 1. Ver logs de Nginx
+docker compose -f docker/docker.compose.yml logs proxy
+
+# 2. Verificar conectividad desde Nginx a otros servicios
+docker compose -f docker/docker.compose.yml exec proxy ping database
+docker compose -f docker/docker.compose.yml exec proxy ping redis
+
+# 3. El backend aún no está configurado, es normal ver 503 en /api/
+# Por ahora solo funciona la página placeholder
+curl http://localhost        # Funciona
+curl http://localhost/api/   # 503 (esperado)
+```
+
+### ❌ Volúmenes con datos viejos
+
+**Problema:** Cambios en `.env` no se aplican porque PostgreSQL ya se inicializó
+
+```bash
+# PostgreSQL solo lee variables de entorno en la PRIMERA inicialización
+# Si el volumen ya existe, ignora las nuevas variables
+
+# Solución: Eliminar volúmenes y recrear (⚠️ BORRA TODOS LOS DATOS)
+docker compose -f docker/docker.compose.yml down -v
+docker compose -f docker/docker.compose.yml --env-file .env up -d
+
+# Verificar que se creó con nuevas credenciales (usa tu DB_USER del .env)
+docker compose -f docker/docker.compose.yml exec database psql -U <usuario> -d <nombre_db> -c "\du"
+```
+
+### ❌ Permisos denegados en Docker (Linux/Mac)
+
+```bash
+# Agregar usuario al grupo docker
 sudo usermod -aG docker $USER
 newgrp docker
 
-# En Windows/Mac, reinicia Docker Desktop
+# Verificar
+docker run hello-world
 ```
 
-### ❌ Submódulos no se clonaron
+### ❌ Docker Compose no encuentra el comando (Windows)
 
 ```bash
-git submodule update --init --recursive
-```
+# Docker Compose v2 usa 'docker compose' (sin guión)
+docker compose version
 
-### ❌ Contenedores no inician
+# Si tienes v1, usa 'docker-compose' (con guión)
+docker-compose version
 
-```bash
-# Ver logs detallados
-docker-compose -f docker/docker.compose.dev.yml logs
-
-# Verificar sintaxis del compose
-docker-compose -f docker/docker.compose.dev.yml config
+# Actualizar Docker Desktop a la última versión
 ```
 
 ---
@@ -289,9 +615,10 @@ docker-compose -f docker/docker.compose.dev.yml config
 | Documento | Propósito |
 |-----------|-----------|
 | [CHANGELOG.md](CHANGELOG.md) | Registro de cambios y versiones |
-| [docker/README.md](docker/README.md) | Detalles de configuración Docker |
-| [frontend/README.md](frontend/README.md) | Guía del frontend |
-| [gin-backend/README.md](gin-backend/README.md) | Guía del backend |
+| [docker/README.md](docker/README.md) | **Guía completa de Docker**: comandos, servicios, credenciales |
+| [.env.example](.env.example) | Plantilla de variables de entorno |
+| [frontend/README.md](frontend/README.md) | Guía del frontend (WIP) |
+| [gin-backend/README.md](gin-backend/README.md) | Guía del backend (WIP) |
 
 ---
 
