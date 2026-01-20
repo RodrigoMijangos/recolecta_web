@@ -76,19 +76,26 @@ docs/
 
 ## 🛠️ Herramientas Disponibles
 
+### Alias rápido: `wflow.ps1`
+
+Wrapper en la raíz para no recordar rutas. Pasa los argumentos al script completo.
+
+**Uso (raíz):**
+```powershell
+./wflow.ps1 -action status
+./wflow.ps1 -action init-branch -branch feature/issue-42 -issueNumber 42
+./wflow.ps1 -action work -submodule frontend
+```
+
 ### workflow-submodules.ps1
 
 Script PowerShell que automatiza todo el flujo de trabajo.
 
-**Ubicación:** `docs/workflow/workflow-submodules.ps1`
+**Ubicación:** `docs/workflow/workflow-submodules.ps1` (llamado por `wflow.ps1`)
 
-**Uso desde raíz:**
+**Uso directo (si lo prefieres):**
 ```powershell
-# Copiar script a raíz (opcional)
-cp docs/workflow/workflow-submodules.ps1 .
-
-# Usar
-.\workflow-submodules.ps1 -action <action> [opciones]
+.\docs\workflow\workflow-submodules.ps1 -action <action> [opciones]
 ```
 
 **Acciones disponibles:**
@@ -188,6 +195,23 @@ Antes de empezar, verifica:
 - 🤖 **Autom.:** Status + Labels + Templates
 - ⏱️ **Setup:** 15 minutos
 - 📈 **Por feature:** 25-40 minutos
+
+---
+
+## 🧭 Qué es tuyo (documentación) vs. qué es del repo (código)
+
+**Tu documentación (puedes adaptarla a tu gusto, es “contenido del proyecto”):**
+- Todo lo que está en `docs/` (guías, índices, changelog, plantillas).
+- Alias `wflow.ps1` (comodidad; opcional, pero útil tenerlo versionado).
+
+**Lo que debe quedarse porque el código lo necesita:**
+- Submódulos `frontend/`, `backend/`, `gin-backend/` y sus referencias (commits) en el repo padre.
+- Configuración existente para builds, dependencias y scripts que el runtime requiera.
+- El script base `docs/workflow/workflow-submodules.ps1` (la automatización depende de él).
+
+**Regla práctica:**
+- Si es guía, checklist, plantilla o alias: es tuyo y vive en `docs/` (o raíz para el alias).
+- Si es código fuente, config de build o script operativo: debe permanecer en el repo para que todo compile/ejecute.
 
 ---
 
