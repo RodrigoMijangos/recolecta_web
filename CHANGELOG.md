@@ -6,33 +6,43 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
 
 ---
 
-## 🚀 Estado Actual
+## ## 0.2.0-alpha - 2026-01-20
 
-**Versión:** `0.1.0-alpha`  
-**Estado:** En desarrollo  
-**Última actualización:** 20 de Enero de 2026
+### Agregado
+- Se agrega información util para nuevos desarrolladores.
+- Información sobre como ejecutar contenedores de Docker.
+- Información sobre los servicios de docker.
+- Quickstart.
+
+### Cambiado
+- Información que muestra README.md actualizada.
+- Configuración de Docker Compose actualizada.
+- Redis requiere una contraseña de manera obligatoria.
+
+### Eliminado
+- 
 
 ---
 
 ## 0.1.0-alpha - 2026-01-20
 
-### 🆕 Agregado
-- ✅ Submódulo del **frontend** integrado al repositorio
-- ✅ Submódulo del **backend** (Gin) integrado al repositorio
-- ✅ Configuración de **Docker Compose** para desarrollo
-- ✅ Configuración de **Docker Compose** para producción
-- ✅ Dockerfile personalizado para **Nginx**
-- ✅ Archivo `.gitignore` para proteger variables de entorno (`.env`)
+### Agregado
+- Submódulo del **frontend** integrado al repositorio
+- Submódulo del **backend** (Gin) integrado al repositorio
+- Configuración de **Docker Compose** para desarrollo
+- Configuración de **Docker Compose** para producción
+- Dockerfile personalizado para **Nginx**
+- Archivo `.gitignore` para proteger variables de entorno (`.env`)
 
-### 🔧 Configurado
-- ✅ Archivo `.gitignore` para archivos `.env`
-- ✅ Docker Compose de desarrollo con servicios base
-- ✅ Docker Compose de producción optimizado
-- ✅ Configuración temporal para ejecutar Docker en desarrollo
-- ✅ Archivo de configuración `.gitignore` refinado para ignorar docs y scripts auxiliares
+### Configurado
+- Archivo `.gitignore` para archivos `.env`
+- Docker Compose de desarrollo con servicios base
+- Docker Compose de producción optimizado
+- Configuración temporal para ejecutar Docker en desarrollo
+- Archivo de configuración `.gitignore` refinado para ignorar docs y scripts auxiliares
 
-### 🗑️ Eliminado
-- ❌ Archivo de ejemplo para Docker Compose
+### Eliminado
+- Archivo de ejemplo para Docker Compose
 
 ---
 
@@ -56,7 +66,7 @@ Cada versión está dividida en **categorías** que te ayudan a identificar qué
 
 Cada vez que hagas cambios importantes, **debes actualizar el changelog** ANTES de hacer el commit:
 
-#### ✅ En Desarrollo (rama activa)
+#### En Desarrollo (rama activa)
 
 ```markdown
 ## [Sin liberar]
