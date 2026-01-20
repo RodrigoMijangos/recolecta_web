@@ -1,0 +1,128 @@
+# Script para automatizar transferencias de issues
+
+Este documento proporciona scripts para facilitar la transferencia de issues a sus repositorios correspondientes.
+
+## Opción 1: Script PowerShell (Windows)
+
+Crea un archivo `transfer-issues.ps1`:
+
+```powershell
+# transfer-issues.ps1
+# Script para transferir issues de recolecta_web a sus repositorios respectivos
+
+# FASE 2-3: Transferir a gin-backend
+$backend_issues = @(4,5,6,7,8,9,10)
+foreach ($issue in $backend_issues) {
+    Write-Host "Abriendo issue #$issue para transferir a gin-backend..."
+    Start-Process "https://github.com/RodrigoMijangos/recolecta_web/issues/$issue"
+    Write-Host "1. Click en ⋯"
+    Write-Host "2. Click en 'Transfer issue'"
+    Write-Host "3. Selecciona 'RodrigoMijangos/gin-backend'"
+    Read-Host "Presiona Enter cuando hayas completado la transferencia"
+}
+
+# FASE 4: Transferir a frontend
+$frontend_issues = @(11,12,13)
+foreach ($issue in $frontend_issues) {
+    Write-Host "Abriendo issue #$issue para transferir a frontend..."
+    Start-Process "https://github.com/RodrigoMijangos/recolecta_web/issues/$issue"
+    Write-Host "1. Click en ⋯"
+    Write-Host "2. Click en 'Transfer issue'"
+    Write-Host "3. Selecciona 'RodrigoMijangos/frontend'"
+    Read-Host "Presiona Enter cuando hayas completado la transferencia"
+}
+
+Write-Host "Transferencias completadas!"
+```
+
+Ejecutar:
+```powershell
+.\transfer-issues.ps1
+```
+
+## Opción 2: Script Bash (Linux/Mac)
+
+Crea un archivo `transfer-issues.sh`:
+
+```bash
+#!/bin/bash
+
+# transfer-issues.sh
+# Script para transferir issues
+
+echo "=== Transfiriendo issues a gin-backend (FASE 2-3) ==="
+for issue in 4 5 6 7 8 9 10; do
+    echo "Abre en navegador: https://github.com/RodrigoMijangos/recolecta_web/issues/$issue"
+    echo "1. Click en ⋯ → Transfer issue"
+    echo "2. Selecciona: RodrigoMijangos/gin-backend"
+    read -p "Presiona Enter cuando hayas completado..."
+done
+
+echo -e "\n=== Transfiriendo issues a frontend (FASE 4) ==="
+for issue in 11 12 13; do
+    echo "Abre en navegador: https://github.com/RodrigoMijangos/recolecta_web/issues/$issue"
+    echo "1. Click en ⋯ → Transfer issue"
+    echo "2. Selecciona: RodrigoMijangos/frontend"
+    read -p "Presiona Enter cuando hayas completado..."
+done
+
+echo "¡Transferencias completadas!"
+```
+
+Ejecutar:
+```bash
+chmod +x transfer-issues.sh
+./transfer-issues.sh
+```
+
+## Opción 3: URLs Directas (Manual más rápido)
+
+Simplemente abre estas URLs y sigue los pasos:
+
+### Transferir a gin-backend (Backend):
+- https://github.com/RodrigoMijangos/recolecta_web/issues/4
+- https://github.com/RodrigoMijangos/recolecta_web/issues/5
+- https://github.com/RodrigoMijangos/recolecta_web/issues/6
+- https://github.com/RodrigoMijangos/recolecta_web/issues/7
+- https://github.com/RodrigoMijangos/recolecta_web/issues/8
+- https://github.com/RodrigoMijangos/recolecta_web/issues/9
+- https://github.com/RodrigoMijangos/recolecta_web/issues/10
+
+### Transferir a frontend:
+- https://github.com/RodrigoMijangos/recolecta_web/issues/11
+- https://github.com/RodrigoMijangos/recolecta_web/issues/12
+- https://github.com/RodrigoMijangos/recolecta_web/issues/13
+
+## Después de transferencias
+
+Una vez transferidos todos los issues, puedes ver el estado con:
+
+```bash
+# Ver issues en recolecta_web
+gh issue list --repo RodrigoMijangos/recolecta_web
+
+# Ver issues en gin-backend
+gh issue list --repo RodrigoMijangos/gin-backend
+
+# Ver issues en frontend
+gh issue list --repo RodrigoMijangos/frontend
+```
+
+---
+
+## Verificación de Transferencias
+
+Después de completar las transferencias, deberías tener:
+
+**recolecta_web:** Issues #1-3, #14-24 (15 issues)
+- FASE 1: Config (3)
+- FASE 5: Testing (3)
+- FASE 6: Docs (3)
+- FASE 7: Producción (5)
+
+**gin-backend:** Issues #4-10 (7 issues)
+- FASE 2: Redis (3)
+- FASE 3: Backend Notificaciones (4)
+
+**frontend:** Issues #11-13 (3 issues)
+- FASE 4: Frontend (3)
