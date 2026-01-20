@@ -9,8 +9,9 @@ Esta es una guía ultra-condensada para desarrolladores que quieren empezar **YA
 git clone <url-repo> && cd recolecta_web
 git submodule update --init --recursive
 
-# 2. Copiar .env
+# 2. Copiar .env y editar con tus valores
 cp .env.example .env
+# Abre .env y cambia las contraseñas
 
 # 3. Levantar servicios
 docker compose -f docker/docker.compose.yml --env-file .env up -d
@@ -78,6 +79,31 @@ docker compose -f docker/docker.compose.yml exec redis redis-cli -a <tu_contrase
 - [README.md](README.md) - Guía completa del proyecto
 - [docker/README.md](docker/README.md) - Referencia completa de Docker
 - [CHANGELOG.md](CHANGELOG.md) - Historial de cambios
+
+---
+
+## 🔧 Comandos de Limpieza
+
+```bash
+# Detener servicios
+docker compose -f docker/docker.compose.yml down
+
+# Detener y borrar volúmenes (BORRA DATOS)
+docker compose -f docker/docker.compose.yml down -v
+
+# 🔥 LIMPIEZA COMPLETA (borra TODO: datos, imágenes, caché)
+docker compose -f docker/docker.compose.yml down -v --remove-orphans
+docker system prune -af --volumes
+
+# 🔄 RESET TOTAL (limpieza + rebuild)
+docker compose -f docker/docker.compose.yml down -v --remove-orphans; docker system prune -af --volumes; docker compose -f docker/docker.compose.yml --env-file .env up -d --build
+```
+
+**Cuándo usar limpieza completa:**
+- Variables de entorno no se aplican
+- Cambios en Dockerfiles no se reflejan
+- Errores persistentes en contenedores
+- Cambio de versiones de PostgreSQL/Redis
 
 ---
 

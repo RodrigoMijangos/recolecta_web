@@ -91,7 +91,7 @@ ENVIRONMENT=development
 #### 3️⃣ Iniciar los servicios
 
 ```bash
-# Producción (con archivo .env)
+# Levantar servicios (especifica .env explícitamente)
 docker compose -f docker/docker.compose.yml --env-file .env up -d
 
 # Ver logs en tiempo real
@@ -100,6 +100,8 @@ docker compose -f docker/docker.compose.yml logs -f
 # Ver logs de un servicio específico
 docker compose -f docker/docker.compose.yml logs -f database
 ```
+
+**💡 Nota:** Siempre usa `--env-file .env` para garantizar que las variables se carguen correctamente.
 
 **✅ Listo!** Tu aplicación estará disponible en:
 
@@ -112,10 +114,14 @@ docker compose -f docker/docker.compose.yml logs -f database
 
 ## 📦 Comandos Docker Útiles
 
+**⚠️ IMPORTANTE:** 
+- Ejecuta todos los comandos desde la **raíz del proyecto**
+- Usa siempre `--env-file .env` para garantizar que las variables se carguen correctamente
+
 ### 🚀 Inicio y Detención
 
 ```bash
-# Iniciar servicios (usando .env automáticamente)
+# Iniciar servicios
 docker compose -f docker/docker.compose.yml --env-file .env up -d
 
 # Iniciar sin detach (ver logs en vivo)
@@ -219,18 +225,29 @@ docker compose -f docker/docker.compose.yml config
 ### 🧹 Limpieza
 
 ```bash
-# Eliminar contenedores detenidos
-docker container prune
+# Limpieza básica (contenedores detenidos, redes, caché)
+docker system prune -f
 
 # Eliminar imágenes no usadas
-docker image prune
+docker image prune -a
 
 # Eliminar volúmenes no usados
 docker volume prune
 
-# Limpieza completa (⚠️ CUIDADO)
-docker system prune -a --volumes
+# 🔥 LIMPIEZA NUCLEAR (borra TODO: contenedores, volúmenes, imágenes, caché)
+docker compose -f docker/docker.compose.yml down -v --remove-orphans
+docker system prune -af --volumes
+
+# 🔄 RESET COMPLETO (limpieza + rebuild desde cero)
+docker compose -f docker/docker.compose.yml down -v --remove-orphans; docker system prune -af --volumes; docker compose -f docker/docker.compose.yml --env-file .env up -d --build
 ```
+
+**⚠️ Notas importantes:**
+- `-v` elimina volúmenes (BORRA datos de PostgreSQL y Redis)
+- `-a` elimina imágenes (las descargará de nuevo)
+- `--volumes` en prune elimina volúmenes huérfanos
+- `--remove-orphans` elimina contenedores de versiones anteriores del compose
+- Usa limpieza nuclear cuando cambies versiones de imágenes o tengas problemas persistentes
 
 ### 🌐 Verificación de Servicios
 
