@@ -17,6 +17,8 @@ recolecta_web/
 │   ├── 📖 WORKFLOW_SUBMÓDULOS.md ................ Guía completa detallada
 │   ├── 🎓 TRAZABILIDAD_EXPLICADO.md ............ Conceptos + diagramas
 │   ├── 🔗 PROJECT_WORKFLOW_INTEGRATION.md ...... Integración con GitHub Project
+│   ├── 📋 PLANTILLA_PR.md ....................... Plantillas Pull Request
+│   ├── 🤖 AUTOMATIZACION_PROJECT_FIELDS.md .... Auto-setup custom fields
 │   └── 🛠️ workflow-submodules.ps1 .............. Script PowerShell (automatización)
 │
 ├── PROJECT (Configuración del GitHub Project)
@@ -165,6 +167,8 @@ Project ve: Issue → Done, PR → Merged
 | `update-parent` | WORKFLOW_SUBMÓDULOS.md | Fase 3: Actualizar Trazabilidad |
 | `workflow-submodules.ps1` | WORKFLOW_SUBMÓDULOS.md | Comandos Disponibles |
 | `Closes #X` | PROJECT_WORKFLOW_INTEGRATION.md | Paso 5: Crear PR |
+| `PR Templates` | PLANTILLA_PR.md | Todo |
+| `Custom fields auto` | AUTOMATIZACION_PROJECT_FIELDS.md | Todo |
 | `Custom fields` | PROJECT_WORKFLOW_INTEGRATION.md | Configuración de Project |
 | `Fase F1-F7` | TRAZABILIDAD_EXPLICADO.md | Conceptos |
 | `Submódulo` | TRAZABILIDAD_EXPLICADO.md | ¿Por Qué Es Importante |
@@ -323,6 +327,12 @@ Trabajo temporal visible ✅
 ### Sé cómo **ejecutar** el workflow
 - [WORKFLOW_QUICK_CHECKLIST.md](./WORKFLOW_QUICK_CHECKLIST.md)
 - [workflow-submodules.ps1](./workflow-submodules.ps1)
+
+### Aprende a **escribir** buenos PRs
+- [PLANTILLA_PR.md](./PLANTILLA_PR.md)
+
+### Automatiza los **custom fields** del Project
+- [AUTOMATIZACION_PROJECT_FIELDS.md](./AUTOMATIZACION_PROJECT_FIELDS.md)
 
 ### Entienda **por qué** funciona
 - [TRAZABILIDAD_EXPLICADO.md](./TRAZABILIDAD_EXPLICADO.md)
