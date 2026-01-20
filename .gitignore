@@ -1,1 +1,6 @@
 .env
+
+# Documentation and helper scripts (keep branches lean)
+docs/
+wflow.ps1
+transfer-issues.ps1
