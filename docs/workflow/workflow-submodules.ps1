@@ -7,7 +7,7 @@ param(
     [string]$action,
     
     [Parameter(Mandatory = $false)]
-    [ValidateSet("frontend", "backend", "gin-backend")]
+    [ValidateSet("frontend", "gin-backend")]
     [string]$submodule,
     
     [Parameter(Mandatory = $false)]
