@@ -31,10 +31,10 @@ Los issues deben distribuirse de la siguiente manera:
 
 **Nota:** GitHub CLI no soporta transferencia automática. Usa esto como referencia:
 
-#### Mover a `gin-backend`:
+#### Mover a `vicpoo/API_recolecta` (Backend):
 1. Abre cada issue (#4-10)
 2. Click en **⋯** (menú) → **"Transfer issue"**
-3. Selecciona `RodrigoMijangos/gin-backend`
+3. Selecciona `vicpoo/API_recolecta`
 4. Confirma
 
 Issues a transferir:
@@ -46,10 +46,10 @@ Issues a transferir:
 - #9 - Crear endpoints REST para notificaciones
 - #10 - Tests unitarios para notificaciones
 
-#### Mover a `frontend`:
+#### Mover a `Denzel-Santiago/RecolectaWeb` (Frontend):
 1. Abre cada issue (#11-13)
 2. Click en **⋯** (menú) → **"Transfer issue"**
-3. Selecciona `RodrigoMijangos/frontend`
+3. Selecciona `Denzel-Santiago/RecolectaWeb`
 4. Confirma
 
 Issues a transferir:

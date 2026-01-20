@@ -68,7 +68,7 @@ Crear e ejecutar script de migraciones para inicializar PostgreSQL.
 
 ### Issue #4: Implementar cliente Redis y conexión
 **Labels:** redis, backend, phase-2
-**Repositorio:** gin-backend
+**Repositorio:** vicpoo/API_recolecta (Backend)
 
 Crear funciones para conectar y gestionar el cliente Redis.
 
@@ -86,7 +86,7 @@ Crear funciones para conectar y gestionar el cliente Redis.
 
 ### Issue #5: Definir estructuras de datos Redis
 **Labels:** redis, architecture, phase-2
-**Repositorio:** gin-backend
+**Repositorio:** vicpoo/API_recolecta (Backend)
 
 Documentar y crear las claves y estructuras que se usarán en Redis.
 
@@ -105,7 +105,7 @@ Documentar y crear las claves y estructuras que se usarán en Redis.
 
 ### Issue #6: Documentar estructura de Redis
 **Labels:** documentation, redis, phase-2
-**Repositorio:** gin-backend
+**Repositorio:** vicpoo/API_recolecta (Backend)
 
 Crear documento detallado de estructura y uso de Redis en el proyecto.
 
@@ -127,7 +127,7 @@ Crear documento detallado de estructura y uso de Redis en el proyecto.
 
 ### Issue #7: Crear servicio de detección de proximidad
 **Labels:** notifications, backend, phase-3
-**Repositorio:** gin-backend
+**Repositorio:** vicpoo/API_recolecta (Backend)
 
 Implementar lógica para detectar cuando un conductor está cerca de un punto de recolección.
 
@@ -146,7 +146,7 @@ Implementar lógica para detectar cuando un conductor está cerca de un punto de
 
 ### Issue #8: Integrar Firebase Cloud Messaging (FCM)
 **Labels:** notifications, backend, phase-3
-**Repositorio:** gin-backend
+**Repositorio:** vicpoo/API_recolecta (Backend)
 
 Implementar envío de notificaciones push a través de FCM.
 
@@ -165,7 +165,7 @@ Implementar envío de notificaciones push a través de FCM.
 
 ### Issue #9: Crear endpoints REST para notificaciones
 **Labels:** api, backend, phase-3
-**Repositorio:** gin-backend
+**Repositorio:** vicpoo/API_recolecta (Backend)
 
 Implementar endpoints que comuniquen frontend, conductores, y sistema de notificaciones.
 
@@ -186,7 +186,7 @@ Implementar endpoints que comuniquen frontend, conductores, y sistema de notific
 
 ### Issue #10: Tests unitarios para notificaciones
 **Labels:** testing, backend, phase-3
-**Repositorio:** gin-backend
+**Repositorio:** vicpoo/API_recolecta (Backend)
 
 Crear suite de tests para lógica de proximidad y FCM.
 
@@ -209,7 +209,7 @@ Crear suite de tests para lógica de proximidad y FCM.
 
 ### Issue #11: Integrar Firebase Messaging en Frontend
 **Labels:** notifications, frontend, phase-4
-**Repositorio:** frontend
+**Repositorio:** Denzel-Santiago/RecolectaWeb (Frontend)
 
 Configurar recepción de notificaciones push en el navegador.
 
@@ -230,7 +230,7 @@ Configurar recepción de notificaciones push en el navegador.
 
 ### Issue #12: Mostrar notificaciones en Dashboard
 **Labels:** ui, frontend, phase-4
-**Repositorio:** frontend
+**Repositorio:** Denzel-Santiago/RecolectaWeb (Frontend)
 
 Crear componentes para mostrar notificaciones en tiempo real.
 
@@ -251,7 +251,7 @@ Crear componentes para mostrar notificaciones en tiempo real.
 
 ### Issue #13: Guardar token FCM en registro de usuario
 **Labels:** auth, frontend, phase-4
-**Repositorio:** frontend
+**Repositorio:** Denzel-Santiago/RecolectaWeb (Frontend)
 
 Integrar FCM token en flujo de autenticación/registro.
 

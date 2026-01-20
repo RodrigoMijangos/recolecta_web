@@ -7,28 +7,25 @@ Este documento proporciona scripts para facilitar la transferencia de issues a s
 Crea un archivo `transfer-issues.ps1`:
 
 ```powershell
-# transfer-issues.ps1
-# Script para transferir issues de recolecta_web a sus repositorios respectivos
-
-# FASE 2-3: Transferir a gin-backend
+# FASE 2-3: Transferir a vicpoo/API_recolecta
 $backend_issues = @(4,5,6,7,8,9,10)
 foreach ($issue in $backend_issues) {
-    Write-Host "Abriendo issue #$issue para transferir a gin-backend..."
+    Write-Host "Abriendo issue #$issue para transferir a vicpoo/API_recolecta..."
     Start-Process "https://github.com/RodrigoMijangos/recolecta_web/issues/$issue"
     Write-Host "1. Click en ⋯"
     Write-Host "2. Click en 'Transfer issue'"
-    Write-Host "3. Selecciona 'RodrigoMijangos/gin-backend'"
+    Write-Host "3. Selecciona 'vicpoo/API_recolecta'"
     Read-Host "Presiona Enter cuando hayas completado la transferencia"
 }
 
-# FASE 4: Transferir a frontend
+# FASE 4: Transferir a Denzel-Santiago/RecolectaWeb
 $frontend_issues = @(11,12,13)
 foreach ($issue in $frontend_issues) {
-    Write-Host "Abriendo issue #$issue para transferir a frontend..."
+    Write-Host "Abriendo issue #$issue para transferir a Denzel-Santiago/RecolectaWeb..."
     Start-Process "https://github.com/RodrigoMijangos/recolecta_web/issues/$issue"
     Write-Host "1. Click en ⋯"
     Write-Host "2. Click en 'Transfer issue'"
-    Write-Host "3. Selecciona 'RodrigoMijangos/frontend'"
+    Write-Host "3. Selecciona 'Denzel-Santiago/RecolectaWeb'"
     Read-Host "Presiona Enter cuando hayas completado la transferencia"
 }
 
@@ -79,7 +76,7 @@ chmod +x transfer-issues.sh
 
 Simplemente abre estas URLs y sigue los pasos:
 
-### Transferir a gin-backend (Backend):
+### Transferir a vicpoo/API_recolecta (Backend):
 - https://github.com/RodrigoMijangos/recolecta_web/issues/4
 - https://github.com/RodrigoMijangos/recolecta_web/issues/5
 - https://github.com/RodrigoMijangos/recolecta_web/issues/6
@@ -88,10 +85,18 @@ Simplemente abre estas URLs y sigue los pasos:
 - https://github.com/RodrigoMijangos/recolecta_web/issues/9
 - https://github.com/RodrigoMijangos/recolecta_web/issues/10
 
-### Transferir a frontend:
+En cada issue:
+1. Click en ⋯ → "Transfer issue"
+2. Selecciona: `vicpoo/API_recolecta`
+
+### Transferir a Denzel-Santiago/RecolectaWeb (Frontend):
 - https://github.com/RodrigoMijangos/recolecta_web/issues/11
 - https://github.com/RodrigoMijangos/recolecta_web/issues/12
 - https://github.com/RodrigoMijangos/recolecta_web/issues/13
+
+En cada issue:
+1. Click en ⋯ → "Transfer issue"
+2. Selecciona: `Denzel-Santiago/RecolectaWeb`
 
 ## Después de transferencias
 
@@ -101,11 +106,11 @@ Una vez transferidos todos los issues, puedes ver el estado con:
 # Ver issues en recolecta_web
 gh issue list --repo RodrigoMijangos/recolecta_web
 
-# Ver issues en gin-backend
-gh issue list --repo RodrigoMijangos/gin-backend
+# Ver issues en API_recolecta
+gh issue list --repo vicpoo/API_recolecta
 
-# Ver issues en frontend
-gh issue list --repo RodrigoMijangos/frontend
+# Ver issues en RecolectaWeb
+gh issue list --repo Denzel-Santiago/RecolectaWeb
 ```
 
 ---
@@ -115,14 +120,14 @@ gh issue list --repo RodrigoMijangos/frontend
 Después de completar las transferencias, deberías tener:
 
 **recolecta_web:** Issues #1-3, #14-24 (15 issues)
-- FASE 1: Config (3)
-- FASE 5: Testing (3)
-- FASE 6: Docs (3)
-- FASE 7: Producción (5)
+- FASE 1: Config (3) - Docker, .env, migraciones
+- FASE 5: Testing (3) - E2E, persistencia, carga
+- FASE 6: Docs (3) - Wiki, Redis docs, diagramas
+- FASE 7: Producción (5) - Logging, métricas, HTTPS, alertas, disaster recovery
 
-**gin-backend:** Issues #4-10 (7 issues)
-- FASE 2: Redis (3)
-- FASE 3: Backend Notificaciones (4)
+**vicpoo/API_recolecta (Backend):** Issues #4-10 (7 issues)
+- FASE 2: Redis (3) - Cliente, estructuras, documentación
+- FASE 3: Backend Notificaciones (4) - Proximidad, FCM, endpoints, tests
 
-**frontend:** Issues #11-13 (3 issues)
-- FASE 4: Frontend (3)
+**Denzel-Santiago/RecolectaWeb (Frontend):** Issues #11-13 (3 issues)
+- FASE 4: Frontend (3) - FCM web, Dashboard, token FCM

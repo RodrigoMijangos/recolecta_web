@@ -127,8 +127,8 @@ En el proyecto → Settings → Automation:
 - **Issues actuales:** https://github.com/RodrigoMijangos/recolecta_web/issues
 - **Crear Project:** https://github.com/RodrigoMijangos/recolecta_web/projects/new
 - **Repositorio Principal:** https://github.com/RodrigoMijangos/recolecta_web
-- **Backend (Gin):** https://github.com/RodrigoMijangos/gin-backend
-- **Frontend (React):** https://github.com/RodrigoMijangos/frontend
+- **Backend (API Recolecta):** https://github.com/vicpoo/API_recolecta
+- **Frontend (Recolecta Web):** https://github.com/Denzel-Santiago/RecolectaWeb
 
 ---
 
@@ -143,11 +143,11 @@ recolecta_web (15):
   ├─ FASE 6: #17-19 (Wiki)
   └─ FASE 7: #20-24 (Producción)
 
-gin-backend (7):
+vicpoo/API_recolecta (7):
   ├─ FASE 2: #4-6 (Redis)
   └─ FASE 3: #7-10 (Backend Notificaciones)
 
-frontend (3):
+Denzel-Santiago/RecolectaWeb (3):
   └─ FASE 4: #11-13 (Frontend)
 ```
 
