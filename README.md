@@ -2,9 +2,23 @@
 
 Sistema de gestión integral para recolección de residuos urbanos que permite administrar y monitorear flotas de camiones recolectores, rutas, y todo el proceso de recolección.
 
+---
+
+## 📚 Documentación del Proyecto
+
+→ **[VER DOCUMENTACIÓN COMPLETA](./docs/README.md)** ← EMPEZAR AQUÍ
+
+Aquí encontrarás:
+- 🚀 Guía completa de workflow y contribuciones
+- 📋 Templates de PRs e Issues
+- 🤖 Automatización del GitHub Project
+- 🎯 Sistema de trazabilidad de trabajo
+- ⚡ Script PowerShell para automatización
+
+---
+
 ## 🏗️ Arquitectura
 
-- **Frontend**: React + TypeScript + Vite
 - **Backend**: Go + Gin Framework (Arquitectura Hexagonal)
 - **Base de Datos**: PostgreSQL 16
 - **Cache**: Redis 7.2
