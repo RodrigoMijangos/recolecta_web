@@ -15,6 +15,10 @@ Aquí encontrarás:
 - 🎯 Sistema de trazabilidad de trabajo
 - ⚡ Script PowerShell para automatización
 
+### Sobre los dos README
+- `README.md` (este): resumen del proyecto y apunta a la doc.
+- `docs/README.md`: índice dentro de la carpeta `docs` (navegación detallada).
+
 ---
 
 ## 🏗️ Arquitectura
