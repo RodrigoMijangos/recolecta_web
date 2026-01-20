@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recolecta Web - En Construcción</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 3rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 2.5rem;
+        }
+        p {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        .status {
+            background: #f0f0f0;
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+        }
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #ddd;
+        }
+        .status-item:last-child {
+            border-bottom: none;
+        }
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .badge.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .badge.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .badge.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Recolecta Web</h1>
+        <p>Sistema de gestión de recolección de residuos urbanos</p>
+        
+        <div class="status">
+            <p style="margin: 0; margin-bottom: 1rem; color: #333; font-weight: 600;">Estado de Servicios</p>
+            <div class="status-item">
+                <span>PostgreSQL</span>
+                <span class="badge success">✓ En línea</span>
+            </div>
+            <div class="status-item">
+                <span>Redis</span>
+                <span class="badge success">✓ En línea</span>
+            </div>
+            <div class="status-item">
+                <span>Nginx</span>
+                <span class="badge success">✓ En línea</span>
+            </div>
+            <div class="status-item">
+                <span>Backend API</span>
+                <span class="badge pending">⏳ Por configurar</span>
+            </div>
+            <div class="status-item">
+                <span>Frontend</span>
+                <span class="badge pending">⏳ En construcción</span>
+            </div>
+        </div>
+
+        <p style="font-size: 0.9rem; color: #999;">
+            Los servicios básicos están siendo configurados. Por favor, vuelve en breve.
+        </p>
+    </div>
+</body>
+</html>
