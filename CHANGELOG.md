@@ -1,0 +1,182 @@
+# 📋 Changelog
+
+> Todos los cambios importantes en este proyecto están documentados aquí.
+
+El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y el proyecto sigue [Versionado Semántico](https://semver.org/lang/es/).
+
+---
+
+## 🚀 Estado Actual
+
+**Versión:** `0.1.0-alpha`  
+**Estado:** En desarrollo  
+**Última actualización:** 20 de Enero de 2026
+
+---
+
+## 0.1.0-alpha - 2026-01-20
+
+### 🆕 Agregado
+- ✅ Submódulo del **frontend** integrado al repositorio
+- ✅ Submódulo del **backend** (Gin) integrado al repositorio
+- ✅ Configuración de **Docker Compose** para desarrollo
+- ✅ Configuración de **Docker Compose** para producción
+- ✅ Dockerfile personalizado para **Nginx**
+- ✅ Archivo `.gitignore` para proteger variables de entorno (`.env`)
+
+### 🔧 Configurado
+- ✅ Archivo `.gitignore` para archivos `.env`
+- ✅ Docker Compose de desarrollo con servicios base
+- ✅ Docker Compose de producción optimizado
+- ✅ Configuración temporal para ejecutar Docker en desarrollo
+- ✅ Archivo de configuración `.gitignore` refinado para ignorar docs y scripts auxiliares
+
+### 🗑️ Eliminado
+- ❌ Archivo de ejemplo para Docker Compose
+
+---
+
+## 📖 Guía del Changelog
+
+### 🎯 Cómo Leerlo
+
+Cada versión está dividida en **categorías** que te ayudan a identificar qué tipo de cambios se hicieron:
+
+| Categoría | Significa | Ejemplo |
+|-----------|-----------|---------|
+| **🆕 Agregado** | Nuevas funcionalidades | Nueva página de login |
+| **🔧 Configurado** | Cambios en configuración | Actualización de variables de entorno |
+| **✏️ Cambiado** | Cambios en funcionalidad existente | Refactor de componentes |
+| **🐛 Arreglado** | Bug fixes | Corrección de error en validación |
+| **🗑️ Eliminado** | Código o archivos removidos | Componentes deprecados |
+| **⚠️ Deprecado** | Features que pronto desaparecerán | Método antiguo que será reemplazado |
+| **🔒 Seguridad** | Parches de seguridad | Actualización de dependencias críticas |
+
+### 🏗️ Cómo Mantenerlo
+
+Cada vez que hagas cambios importantes, **debes actualizar el changelog** ANTES de hacer el commit:
+
+#### ✅ En Desarrollo (rama activa)
+
+```markdown
+## [Sin liberar]
+
+### 🆕 Agregado
+- Nueva funcionalidad X
+
+### 🐛 Arreglado
+- Bug en el componente Y
+```
+
+#### ✅ Al Hacer Release
+
+1. **Reemplaza `[Sin liberar]` con la versión** en formato `X.Y.Z`
+2. **Añade la fecha** en formato `YYYY-MM-DD`
+3. **Crea un nuevo tag** en Git
+
+```bash
+# Ejemplo:
+git tag -a v0.2.0 -m "Release version 0.2.0"
+git push origin v0.2.0
+```
+
+---
+
+## 📊 Sistema de Versionado (Versionado Semántico)
+
+Usamos **SemVer**: `MAJOR.MINOR.PATCH(-prerelease)(+metadata)`
+
+### Formato: X.Y.Z
+
+```
+0.1.0
+├── 0 = MAJOR (cambios incompatibles)
+├── 1 = MINOR (nuevas funcionalidades)
+└── 0 = PATCH (bug fixes)
+```
+
+### 📈 Reglas de Versionado
+
+| Cambio | Incrementa | Ejemplo |
+|--------|-----------|---------|
+| Bug fixes y mejoras pequeñas | PATCH | 0.1.0 → 0.1.1 |
+| Nuevas funcionalidades | MINOR | 0.1.0 → 0.2.0 |
+| Cambios incompatibles | MAJOR | 0.1.0 → 1.0.0 |
+
+### 🔤 Estados Especiales (Prerelease)
+
+Para versiones en desarrollo, usamos sufijos:
+
+```
+0.1.0-alpha    → Versión muy temprana, inestable
+0.1.0-beta     → Más estable pero en pruebas
+0.1.0-rc.1     → Release Candidate (casi lista)
+1.0.0          → Versión estable final
+```
+
+### 📋 Hoja de Referencia Rápida
+
+```bash
+# Versión actual
+git describe --tags
+
+# Ver todos los tags
+git tag -l
+
+# Crear nuevo tag (cuando hagas release)
+git tag -a v0.2.0 -m "Release version 0.2.0"
+
+# Ver cambios desde último tag
+git log $(git describe --tags --abbrev=0)..HEAD --oneline
+```
+
+---
+
+## 💡 Consejos para Desarrolladores
+
+### ✍️ Al Hacer Cambios
+
+1. **Trabaja en tu rama** (ej: `feature/nueva-funcionalidad`)
+2. **Actualiza el changelog** en la sección `[Sin liberar]`
+3. **Sé descriptivo** pero conciso:
+   - ✅ `Agregado: Modal de confirmación en validación de rutas`
+   - ❌ `fixed stuff`
+
+### 🔍 Antes de hacer un Pull Request
+
+```bash
+# Verifica que el changelog esté actualizado
+git diff main -- CHANGELOG.md
+
+# Lee tu changelog
+cat CHANGELOG.md
+```
+
+### 📦 Al Hacer Release (Solo para Admin)
+
+```bash
+# 1. Actualizar versión en package.json (frontend)
+# 2. Reemplazar [Sin liberar] en CHANGELOG.md
+# 3. Hacer commit
+git commit -am "chore: release v0.2.0"
+
+# 4. Crear tag
+git tag -a v0.2.0 -m "Release version 0.2.0"
+
+# 5. Hacer push
+git push origin main
+git push origin v0.2.0
+```
+
+---
+
+## 📦 Estructura del Proyecto
+
+```
+recolecta_web/
+├── frontend/              (React + TypeScript + Vite)
+├── gin-backend/          (Go + Gin)
+├── docker/               (Configuración Docker)
+├── map-navigator/        (Módulo separado)
+└── docker-compose.yml    (Orquestación de servicios)
+```
