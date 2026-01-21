@@ -425,6 +425,73 @@ El backend se reinicia automáticamente con hot-reload (depende de configuració
 
 ---
 
+## 🧪 Testing
+
+El proyecto incluye tests automatizados para validar la configuración y funcionamiento de los servicios.
+
+### Tests de Redis
+
+Suite de tests para validar:
+- ✅ Configuración de `redis.conf`
+- ✅ Healthcheck en Docker Compose
+- ✅ Inicio del servicio y conectividad
+- ✅ Persistencia de datos (AOF)
+
+#### Ejecutar tests
+
+**Requisitos:**
+- Docker y Docker Compose corriendo
+- WSL integrado con Docker Desktop (Windows)
+- Bash disponible
+
+**Desde WSL/Linux:**
+```bash
+bash scripts/tests/redis/run_all.sh
+```
+
+**Desde PowerShell (Windows con WSL):**
+```powershell
+wsl -d Ubuntu bash -c "cd /mnt/c/Users/TU_USUARIO/Documents/GithubProjects/recolecta_web && bash scripts/tests/redis/run_all.sh"
+```
+
+#### Salida esperada
+
+```bash
+Executing all Redis tests...
+==================================
+Starting Redis configuration test...
+Redis configuration test passed successfully!
+Starting Redis healthcheck test...
+Redis healthcheck test passed successfully!
+Starting Redis service startup test...
+Redis service is up and responding to PING.
+✅ Service started successfully and is healthy.
+Starting Redis persistence test...
+Persistence verified: value retrieved successfully (test-data)
+==================================
+All tests passed successfully!
+```
+
+#### Tests individuales
+
+```bash
+# Solo configuración
+bash scripts/tests/redis/test_redis_config.sh
+
+# Solo healthcheck
+bash scripts/tests/redis/test_healthcheck.sh
+
+# Solo startup
+bash scripts/tests/redis/test_service_startup.sh
+
+# Solo persistencia
+bash scripts/tests/redis/test_persistence.sh
+```
+
+📖 **Documentación completa:** [docs/testing/redis-tests.md](docs/testing/redis-tests.md)
+
+---
+
 ## ✅ Verificar Instalación
 
 Después de ejecutar `docker compose -f docker/docker.compose.yml --env-file .env up -d`, verifica que todo funciona:
