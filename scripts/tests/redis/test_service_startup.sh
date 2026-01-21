@@ -5,11 +5,12 @@ set -e
 echo "Starting Redis service startup test..."
 
 # Up service in detached mode
-docker-compose -f docker/docker.compose.yml up -d redis
+docker-compose --env-file .env -f docker/docker.compose.yml up -d redis
 
 # Wait for a few seconds to allow the service to start
 MAX_RETRIES=10
 RETRY_COUNT=0
+ENV_FILE=".env"
 while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
     if docker exec -e REDISCLI_AUTH="${REDIS_PASSWORD}" redis_cache redis-cli PING > /dev/null 2>&1; then
         echo "Redis service is up and responding to PING."
@@ -21,7 +22,7 @@ while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
     fi
 done
 
-if [ $RETRY -eq $MAX_RETRIES ]; then
+if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
   echo "❌ Redis no respondió en tiempo límite"
   exit 1
 fi
