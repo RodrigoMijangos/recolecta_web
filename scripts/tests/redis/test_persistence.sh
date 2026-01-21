@@ -21,7 +21,7 @@ echo "Container restarted"
 
 # GET
 VALUE=$(docker exec -e REDISCLI_AUTH=$PASS redis_cache redis-cli GET test:persist)
-if [ "$VALUE" = "datos-prueba" ]; then
+if [ "$VALUE" = "test-data" ]; then
   echo "Persistence verified: value retrieved successfully ($VALUE)"
   exit 0
 else
