@@ -20,11 +20,15 @@ services:
     restart: always
     ports:
       - "${REDIS_PORT:-6379}:6379"
-    environment:
-      REDIS_PASSWORD: ${REDIS_PASSWORD:-redis-default-pass}
     volumes:
       - redis_data:/data 
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis-default-pass}
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf", "--requirepass", "${REDIS_PASSWORD}"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "PING"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     networks:
       - app_internal_net
 
