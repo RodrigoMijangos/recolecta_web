@@ -1,12 +1,12 @@
-name: 🧪 Testing Avanzado
+name: Testing Avanzado
 description: Tests de integración, end-to-end, health checks completos del sistema y suites de testing complejas
-title: "[TEST] "
+title: "[TEST] <tipo>: <descripción del alcance> - Ejemplo general: Suite E2E - Ejemplo específico: Tests E2E para flujo completo de gestión de rutas"
 labels: ["testing", "integration", "triage"]
 body:
   - type: markdown
     attributes:
       value: |
-        ## Gracias por contribuir a Recolecta Web 🗑️
+        Gracias por contribuir a Recolecta Web
         
         Este template es para testing **avanzado y complejo**, no para tests unitarios simples.
         Incluye: tests de integración, E2E, health checks, performance testing, etc.
@@ -14,19 +14,19 @@ body:
   - type: dropdown
     id: test-type
     attributes:
-      label: 🧪 Tipo de Testing
+      label: Tipo de Testing
       description: ¿Qué tipo de testing avanzado se necesita?
       options:
-        - 🔗 Integration Testing - Tests de integración entre componentes
-        - 🌐 End-to-End (E2E) - Tests del flujo completo de usuario
-        - 💊 Health Check - Verificación completa del sistema
-        - 🚀 Performance Testing - Pruebas de carga y rendimiento
-        - 🔒 Security Testing - Pruebas de seguridad y vulnerabilidades
-        - 🎯 Smoke Testing - Suite de tests críticos básicos
-        - 📊 Load Testing - Pruebas de estrés y capacidad
-        - 🔄 Regression Testing - Suite de regresión completa
-        - 🌍 Cross-Browser/Platform - Compatibilidad multi-plataforma
-        - 🛠️ Contract Testing - Tests de contratos entre servicios
+        - Integration Testing - Tests de integración entre componentes
+        - End-to-End (E2E) - Tests del flujo completo de usuario
+        - Health Check - Verificación completa del sistema
+        - Performance Testing - Pruebas de carga y rendimiento
+        - Security Testing - Pruebas de seguridad y vulnerabilidades
+        - Smoke Testing - Suite de tests críticos básicos
+        - Load Testing - Pruebas de estrés y capacidad
+        - Regression Testing - Suite de regresión completa
+        - Cross-Browser/Platform - Compatibilidad multi-plataforma
+        - Contract Testing - Tests de contratos entre servicios
       multiple: true
     validations:
       required: true
@@ -34,7 +34,7 @@ body:
   - type: textarea
     id: description
     attributes:
-      label: 📋 Descripción de la Suite de Testing
+      label: Descripción de la Suite de Testing
       description: Describe qué necesita ser testeado y por qué
       placeholder: |
         Ej. Necesitamos una suite de tests E2E que valide el flujo completo desde el login
@@ -46,7 +46,7 @@ body:
   - type: textarea
     id: scope
     attributes:
-      label: 🎯 Alcance del Testing
+      label: Alcance del Testing
       description: ¿Qué componentes, funcionalidades o flujos deben ser cubiertos?
       placeholder: |
         Componentes/Módulos a testear:
@@ -65,7 +65,7 @@ body:
   - type: textarea
     id: test-scenarios
     attributes:
-      label: 📝 Escenarios de Prueba
+      label: Escenarios de Prueba
       description: Lista los escenarios específicos que deben testearse
       placeholder: |
         1. **Happy Path**: Usuario completa ruta sin problemas
@@ -90,20 +90,20 @@ body:
   - type: dropdown
     id: complexity
     attributes:
-      label: 📊 Complejidad de la Suite
+      label: Complejidad de la Suite
       description: ¿Qué tan compleja es esta suite de testing?
       options:
-        - 🟢 Media - 5-10 test cases, 1-2 días de implementación
-        - 🟡 Alta - 10-30 test cases, 3-5 días de implementación
-        - 🔴 Muy Alta - 30+ test cases, más de una semana
-        - 🎯 Epic - Requiere múltiples suites y fases
+        - Media - 5-10 test cases, 1-2 días de implementación
+        - Alta - 10-30 test cases, 3-5 días de implementación
+        - Muy Alta - 30+ test cases, más de una semana
+        - Epic - Requiere múltiples suites y fases
     validations:
       required: true
 
   - type: textarea
     id: tools-frameworks
     attributes:
-      label: 🛠️ Herramientas y Frameworks
+      label: Herramientas y Frameworks
       description: ¿Qué herramientas o frameworks deberían usarse?
       placeholder: |
         Sugerencias o requisitos:
@@ -119,7 +119,7 @@ body:
   - type: textarea
     id: environment-requirements
     attributes:
-      label: 🖥️ Requisitos de Entorno
+      label: Requisitos de Entorno
       description: ¿Qué se necesita para ejecutar estos tests?
       placeholder: |
         - Base de datos con datos de prueba
@@ -134,7 +134,7 @@ body:
   - type: textarea
     id: success-criteria
     attributes:
-      label: ✅ Criterios de Éxito
+      label: Criterios de Éxito
       description: ¿Cómo sabremos que la suite de testing es exitosa?
       placeholder: |
         - [ ] Cobertura de código > 80% en componentes críticos
@@ -150,19 +150,19 @@ body:
   - type: dropdown
     id: priority
     attributes:
-      label: 🔥 Prioridad
+      label: Prioridad
       description: ¿Qué tan urgente es implementar esta suite?
       options:
-        - 🔴 Alta - Crítico para release o producción
-        - 🟡 Media - Importante para calidad
-        - 🟢 Baja - Mejora deseable
+        - Alta - Crítico para release o producción
+        - Media - Importante para calidad
+        - Baja - Mejora deseable
     validations:
       required: true
 
   - type: textarea
     id: ci-cd-integration
     attributes:
-      label: 🔄 Integración CI/CD
+      label: Integración CI/CD
       description: ¿Cómo debe integrarse con el pipeline de CI/CD?
       placeholder: |
         - Ejecutar en cada PR
@@ -177,7 +177,7 @@ body:
   - type: textarea
     id: test-data
     attributes:
-      label: 📊 Datos de Prueba
+      label: Datos de Prueba
       description: ¿Qué datos de prueba se necesitan?
       placeholder: |
         - Dataset de rutas de ejemplo
@@ -191,7 +191,7 @@ body:
   - type: textarea
     id: performance-requirements
     attributes:
-      label: ⚡ Requisitos de Performance
+      label: Requisitos de Performance
       description: Si aplica, especifica métricas de performance esperadas
       placeholder: |
         - Tiempo de respuesta máximo: X ms
@@ -205,7 +205,7 @@ body:
   - type: textarea
     id: maintenance-plan
     attributes:
-      label: 🔧 Plan de Mantenimiento
+      label: Plan de Mantenimiento
       description: ¿Cómo se mantendrán y actualizarán estos tests?
       placeholder: |
         - Frecuencia de revisión
@@ -218,7 +218,7 @@ body:
   - type: textarea
     id: additional-context
     attributes:
-      label: 📎 Contexto Adicional
+      label: Contexto Adicional
       description: Cualquier información adicional relevante
       placeholder: |
         - Referencias a incidentes en producción
@@ -232,7 +232,7 @@ body:
   - type: checkboxes
     id: checklist
     attributes:
-      label: 📋 Checklist Pre-implementación
+      label: Checklist Pre-implementación
       description: Verifica estos puntos antes de comenzar
       options:
         - label: He definido claramente los escenarios de prueba
