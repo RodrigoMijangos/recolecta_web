@@ -9,6 +9,26 @@ body:
         Gracias por contribuir a Recolecta Web
         
         Usa este template para reportar bugs, proponer fixes o refactorizaciones.
+        
+        **¿Cuándo usar Bug vs Fix?**
+        
+        **Bug**: Usa cuando estás REPORTANDO un problema que encontraste
+        - Ejemplos:
+          - La aplicación se cierra al hacer click en "Guardar ruta"
+          - Los datos no se sincronizan correctamente con el backend
+          - El mapa no muestra las coordenadas GPS correctas
+        
+        **Fix**: Usa cuando ya IDENTIFICASTE la causa y propones una solución
+        - Ejemplos:
+          - Corregir validación de formulario que permite datos inválidos (ya sabes qué validación falla)
+          - Actualizar endpoint deprecado de la API (ya sabes qué cambiar)
+          - Reparar memoria leak en el componente MapView (ya identificaste la causa)
+        
+        **Refactor**: Mejora del código sin cambiar funcionalidad
+        - Ejemplos:
+          - Extraer lógica duplicada a funciones reutilizables
+          - Reorganizar estructura de carpetas
+          - Mejorar nombres de variables y funciones
 
   - type: dropdown
     id: issue-type
