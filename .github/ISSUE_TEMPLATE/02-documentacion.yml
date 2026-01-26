@@ -1,0 +1,113 @@
+name: 📚 Documentación
+description: Todo lo relacionado con documentación, READMEs, licencias y generación de artefactos de documentación
+title: "[DOCS] "
+labels: ["documentation", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Gracias por contribuir a Recolecta Web 🗑️
+        
+        Usa este template para solicitar mejoras en la documentación del proyecto.
+
+  - type: dropdown
+    id: doc-type
+    attributes:
+      label: 📖 Tipo de Documentación
+      description: ¿Qué tipo de documentación necesita ser creada o actualizada?
+      options:
+        - 📝 README - Archivo README principal o de submódulos
+        - 📄 Guía de Usuario - Documentación para usuarios finales
+        - 🔧 Guía de Desarrollo - Documentación para desarrolladores
+        - 📋 API Documentation - Documentación de endpoints y APIs
+        - ⚖️ Licencia - Archivos de licencia y legal
+        - 🎓 Tutoriales - Guías paso a paso
+        - 📊 Diagramas - Arquitectura, flujos, etc.
+        - 🔍 Comentarios en Código - JSDoc, GoDoc, etc.
+        - 📚 Otro - Especificar en la descripción
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 📋 Descripción
+      description: ¿Qué documentación necesita ser creada o actualizada?
+      placeholder: |
+        Ej. El README principal no explica cómo configurar las variables de entorno.
+        Necesitamos añadir una sección detallada sobre la configuración.
+    validations:
+      required: true
+
+  - type: textarea
+    id: current-state
+    attributes:
+      label: 📄 Estado Actual
+      description: ¿Qué documentación existe actualmente (si aplica)?
+      placeholder: |
+        Describe el estado actual de la documentación:
+        - ¿Qué información existe?
+        - ¿Dónde se encuentra?
+        - ¿Qué le falta o está desactualizado?
+    validations:
+      required: false
+
+  - type: textarea
+    id: desired-state
+    attributes:
+      label: ✨ Estado Deseado
+      description: ¿Cómo debería verse la documentación una vez completada?
+      placeholder: |
+        Describe qué debe incluir la documentación:
+        - Temas a cubrir
+        - Nivel de detalle esperado
+        - Formato preferido
+        - Ejemplos de código o capturas
+    validations:
+      required: true
+
+  - type: textarea
+    id: audience
+    attributes:
+      label: 👥 Audiencia Objetivo
+      description: ¿Para quién es esta documentación?
+      placeholder: |
+        Ej. Desarrolladores nuevos, usuarios finales, administradores de sistema, etc.
+    validations:
+      required: true
+
+  - type: textarea
+    id: references
+    attributes:
+      label: 🔗 Referencias y Ejemplos
+      description: Enlaces a documentación similar, estándares a seguir, o ejemplos de otros proyectos
+      placeholder: |
+        - https://ejemplo.com/buena-documentacion
+        - Seguir el estilo de X proyecto
+        - Basarse en el estándar Y
+    validations:
+      required: false
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 🔥 Prioridad
+      description: ¿Qué tan urgente es esta documentación?
+      options:
+        - 🔴 Alta - Bloquea el uso o desarrollo
+        - 🟡 Media - Importante para nuevos usuarios
+        - 🟢 Baja - Nice to have
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: 📎 Contexto Adicional
+      description: Cualquier otra información relevante
+      placeholder: |
+        - Capturas de pantalla
+        - Ejemplos específicos
+        - Consideraciones especiales
+    validations:
+      required: false
