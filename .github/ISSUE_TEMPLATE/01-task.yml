@@ -1,0 +1,79 @@
+name: 📝 Task Genérica
+description: Tareas pequeñas, específicas o que no encajan en otras categorías
+title: "[TASK] "
+labels: ["task", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Gracias por contribuir a Recolecta Web 🗑️
+        
+        Usa este template para tareas genéricas, pequeñas o muy específicas que no encajan en otras categorías.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 📋 Descripción de la Tarea
+      description: Describe claramente qué necesita hacerse
+      placeholder: Ej. Actualizar el archivo .gitignore para excluir archivos temporales
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: 🎯 Contexto y Motivación
+      description: ¿Por qué es necesaria esta tarea? ¿Qué problema resuelve?
+      placeholder: Esta tarea ayudará a...
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: ✅ Criterios de Aceptación
+      description: ¿Cómo sabremos que la tarea está completa?
+      placeholder: |
+        - [ ] Criterio 1
+        - [ ] Criterio 2
+        - [ ] Criterio 3
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 🔥 Prioridad
+      description: ¿Qué tan urgente es esta tarea?
+      options:
+        - 🔴 Alta - Necesita atención inmediata
+        - 🟡 Media - Importante pero no urgente
+        - 🟢 Baja - Puede esperar
+    validations:
+      required: true
+
+  - type: dropdown
+    id: complexity
+    attributes:
+      label: 📊 Complejidad Estimada
+      description: ¿Qué tan compleja consideras esta tarea?
+      options:
+        - 🟢 Simple (< 1 hora)
+        - 🟡 Media (1-4 horas)
+        - 🔴 Compleja (> 4 horas)
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: 📎 Contexto Adicional
+      description: |
+        Información adicional que pueda ser útil:
+        - Enlaces a documentación
+        - Capturas de pantalla
+        - Referencias a código existente
+        - Dependencias con otras tareas
+      placeholder: Añade cualquier información relevante aquí
+    validations:
+      required: false
