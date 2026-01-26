@@ -29,34 +29,29 @@ Ejemplos de cuándo dividir:
 
 ## Issue Relacionado
 =======
-# 📝 Descripción del Pull Request
+# Descripción del Pull Request
 
 <!-- Proporciona una descripción clara y concisa de los cambios que incluye este PR -->
 
-## 🎯 Tipo de Cambio
+## Tipo de Cambio
 
 <!-- Marca con una 'x' la(s) opción(es) que aplique(n) -->
 
-- [ ] 🐛 Bug fix (corrección de un error)
-- [ ] ✨ Nueva funcionalidad (feature)
-- [ ] 📚 Documentación
-- [ ] 🔧 Refactorización
-- [ ] 🎨 Cambios de estilo (formato, sin cambios de código)
-- [ ] ✅ Pruebas (añadir o corregir tests)
-- [ ] ⚙️ Configuración o dependencias
+- [ ] Bug fix (corrección de un error)
+- [ ] Nueva funcionalidad (feature)
+- [ ] Documentación
+- [ ] Refactorización
+- [ ] Cambios de estilo (formato, sin cambios de código)
+- [ ] Pruebas (añadir o corregir tests)
+- [ ] Configuración o dependencias
 
 ## 📋 Issue Relacionado
->>>>>>> 22de440 (Add GitHub templates for Issues and Pull Requests)
 
 <!-- Si este PR resuelve un issue, enlázalo aquí. Ejemplo: Closes #123 -->
 
 - Closes #
 
-<<<<<<< HEAD
-## Cambios Implementados
-=======
 ## 🔍 Cambios Implementados
->>>>>>> 22de440 (Add GitHub templates for Issues and Pull Requests)
 
 <!-- Lista los cambios principales de forma clara -->
 
@@ -64,11 +59,7 @@ Ejemplos de cuándo dividir:
 - 
 - 
 
-<<<<<<< HEAD
-## ¿Cómo se ha probado?
-=======
 ## 🧪 ¿Cómo se ha probado?
->>>>>>> 22de440 (Add GitHub templates for Issues and Pull Requests)
 
 <!-- Describe las pruebas que has realizado para verificar tus cambios -->
 
@@ -82,11 +73,7 @@ Ejemplos de cuándo dividir:
 <!-- Proporciona instrucciones para que los revisores puedan reproducir las pruebas -->
 
 
-<<<<<<< HEAD
-## Capturas de Pantalla (si aplica)
-=======
 ## 📸 Capturas de Pantalla (si aplica)
->>>>>>> 22de440 (Add GitHub templates for Issues and Pull Requests)
 
 <!-- Si los cambios afectan la UI, incluye capturas de pantalla o GIFs -->
 
@@ -94,11 +81,7 @@ Ejemplos de cuándo dividir:
 |-------|---------|
 |       |         |
 
-<<<<<<< HEAD
-## Checklist
-=======
 ## ✅ Checklist
->>>>>>> 22de440 (Add GitHub templates for Issues and Pull Requests)
 
 <!-- Marca con una 'x' las opciones completadas -->
 
@@ -111,20 +94,12 @@ Ejemplos de cuándo dividir:
 - [ ] Los tests unitarios nuevos y existentes pasan localmente con mis cambios
 - [ ] Cualquier cambio dependiente ha sido mergeado y publicado
 
-<<<<<<< HEAD
-## Notas Adicionales
-=======
 ## 📌 Notas Adicionales
->>>>>>> 22de440 (Add GitHub templates for Issues and Pull Requests)
 
 <!-- Cualquier información adicional que los revisores deban saber -->
 
 
-<<<<<<< HEAD
-## Referencias
-=======
 ## 🔗 Referencias
->>>>>>> 22de440 (Add GitHub templates for Issues and Pull Requests)
 
 <!-- Enlaces a documentación, discusiones, especificaciones, etc. -->
 
