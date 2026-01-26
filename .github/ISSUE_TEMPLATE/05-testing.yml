@@ -10,6 +10,10 @@ body:
         
         Este template es para testing **avanzado y complejo**, no para tests unitarios simples.
         Incluye: tests de integración, E2E, health checks, performance testing, etc.
+        
+        **Nota sobre CI/CD Testing**: Si tu objetivo principal es probar o mejorar el pipeline 
+        de CI/CD con GitHub Actions (workflows, jobs, steps), considera usar este template 
+        seleccionando la opción "CI/CD Pipeline Testing" en el tipo de testing.
 
   - type: dropdown
     id: test-type
@@ -27,6 +31,7 @@ body:
         - Regression Testing - Suite de regresión completa
         - Cross-Browser/Platform - Compatibilidad multi-plataforma
         - Contract Testing - Tests de contratos entre servicios
+        - CI/CD Pipeline Testing - Tests del workflow de GitHub Actions
       multiple: true
     validations:
       required: true

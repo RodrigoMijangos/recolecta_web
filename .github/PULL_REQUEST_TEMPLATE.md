@@ -14,6 +14,18 @@
 - [ ] Pruebas (añadir o corregir tests)
 - [ ] Configuración o dependencias
 
+<!-- 
+GUÍA DE SELECCIÓN:
+✓ Es válido marcar 2-3 opciones relacionadas (ej: bug fix + tests, feature + documentación)
+✗ Si necesitas marcar 4 o más opciones, considera dividir en múltiples PRs
+✗ Si los cambios son independientes entre sí, créalos en PRs separados
+
+Ejemplos de cuándo dividir:
+- Feature nueva + refactor completo del código existente → 2 PRs
+- Bug fix urgente + documentación general no relacionada → 2 PRs
+- Múltiples features no relacionadas → 1 PR por feature
+-->
+
 ## Issue Relacionado
 
 <!-- Si este PR resuelve un issue, enlázalo aquí. Ejemplo: Closes #123 -->
