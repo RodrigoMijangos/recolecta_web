@@ -1,19 +1,19 @@
-name: ✨ Feature Request
+name: Feature Request
 description: Proponer nuevas funcionalidades o mejoras al sistema
-title: "[FEAT] "
+title: "[FEAT] <módulo>: <funcionalidad específica> - Ejemplo general: Sistema de notificaciones - Ejemplo específico: Notificaciones push para cambios de ruta en tiempo real"
 labels: ["enhancement", "feature", "triage"]
 body:
   - type: markdown
     attributes:
       value: |
-        ## Gracias por contribuir a Recolecta Web 🗑️
+        Gracias por contribuir a Recolecta Web
         
         Usa este template para proponer nuevas funcionalidades o características.
 
   - type: textarea
     id: feature-description
     attributes:
-      label: 🎯 Descripción de la Funcionalidad
+      label: Descripción de la Funcionalidad
       description: Describe claramente la nueva funcionalidad que propones
       placeholder: |
         Ej. Implementar un sistema de notificaciones push para alertar a los conductores
@@ -24,7 +24,7 @@ body:
   - type: textarea
     id: problem
     attributes:
-      label: 🤔 Problema que Resuelve
+      label: Problema que Resuelve
       description: ¿Qué problema o necesidad aborda esta funcionalidad?
       placeholder: |
         Actualmente, los conductores solo pueden ver sus rutas al inicio del día y no
@@ -35,7 +35,7 @@ body:
   - type: textarea
     id: proposed-solution
     attributes:
-      label: 💡 Solución Propuesta
+      label: Solución Propuesta
       description: ¿Cómo imaginas que debería funcionar esta funcionalidad?
       placeholder: |
         Describe:
@@ -49,15 +49,15 @@ body:
   - type: dropdown
     id: component
     attributes:
-      label: 🏗️ Componente Afectado
+      label: Componente Afectado
       description: ¿Qué parte del sistema se vería afectada?
       options:
-        - 🎨 Frontend - Interfaz de usuario
-        - ⚙️ Backend - API y lógica de negocio
-        - 🗄️ Base de Datos - Esquema o datos
-        - 🐳 Infraestructura - Docker, nginx, etc.
-        - 📱 Múltiple - Varios componentes
-        - 🔍 No estoy seguro
+        - Frontend - Interfaz de usuario
+        - Backend - API y lógica de negocio
+        - Base de Datos - Esquema o datos
+        - Infraestructura - Docker, nginx, etc.
+        - Múltiple - Varios componentes
+        - No estoy seguro
       multiple: false
     validations:
       required: true
@@ -65,7 +65,7 @@ body:
   - type: textarea
     id: alternatives
     attributes:
-      label: 🔄 Alternativas Consideradas
+      label: Alternativas Consideradas
       description: ¿Has considerado otras formas de resolver este problema?
       placeholder: |
         - Alternativa 1: [descripción]
@@ -77,7 +77,7 @@ body:
   - type: textarea
     id: user-stories
     attributes:
-      label: 👤 Historias de Usuario
+      label: Historias de Usuario
       description: Describe los casos de uso desde la perspectiva del usuario
       placeholder: |
         - Como [rol], quiero [acción] para [beneficio]
@@ -89,7 +89,7 @@ body:
   - type: textarea
     id: acceptance-criteria
     attributes:
-      label: ✅ Criterios de Aceptación
+      label: Criterios de Aceptación
       description: ¿Cómo sabremos que la funcionalidad está completa?
       placeholder: |
         - [ ] El usuario puede [acción específica]
@@ -102,33 +102,33 @@ body:
   - type: dropdown
     id: priority
     attributes:
-      label: 🔥 Prioridad
+      label: Prioridad
       description: ¿Qué tan importante es esta funcionalidad?
       options:
-        - 🔴 Crítica - Esencial para el negocio
-        - 🟡 Alta - Importante para la experiencia del usuario
-        - 🟢 Media - Mejora deseable
-        - 🔵 Baja - Nice to have
+        - Crítica - Esencial para el negocio
+        - Alta - Importante para la experiencia del usuario
+        - Media - Mejora deseable
+        - Baja - Nice to have
     validations:
       required: true
 
   - type: dropdown
     id: complexity
     attributes:
-      label: 📊 Complejidad Estimada
+      label: Complejidad Estimada
       description: ¿Qué tan compleja crees que es esta funcionalidad?
       options:
-        - 🟢 Pequeña - Pocos días de desarrollo
-        - 🟡 Media - 1-2 semanas de desarrollo
-        - 🔴 Grande - Más de 2 semanas
-        - 🎯 Epic - Requiere dividirse en múltiples issues
+        - Pequeña - Pocos días de desarrollo
+        - Media - 1-2 semanas de desarrollo
+        - Grande - Más de 2 semanas
+        - Epic - Requiere dividirse en múltiples issues
     validations:
       required: false
 
   - type: textarea
     id: technical-considerations
     attributes:
-      label: 🔧 Consideraciones Técnicas
+      label: Consideraciones Técnicas
       description: Aspectos técnicos importantes a considerar
       placeholder: |
         - Nuevas dependencias necesarias
@@ -142,7 +142,7 @@ body:
   - type: textarea
     id: mockups
     attributes:
-      label: 🎨 Mockups o Diseños (si aplica)
+      label: Mockups o Diseños (si aplica)
       description: Enlaces a diseños, wireframes o capturas de pantalla
       placeholder: |
         Puedes incluir:
@@ -155,7 +155,7 @@ body:
   - type: textarea
     id: additional-context
     attributes:
-      label: 📎 Contexto Adicional
+      label: Contexto Adicional
       description: Cualquier información adicional que sea relevante
       placeholder: |
         - Enlaces a discusiones relacionadas

@@ -1,25 +1,25 @@
-name: 🐛 Bug / Fix / Refactor
+name: Bug / Fix / Refactor
 description: Reportar bugs, proponer correcciones o refactorizaciones de código existente
-title: "[BUG] "
+title: "[BUG] <componente>: <descripción del problema> - Ejemplo general: Error en validación - Ejemplo específico: Falla al guardar rutas con más de 50 puntos"
 labels: ["bug", "triage"]
 body:
   - type: markdown
     attributes:
       value: |
-        ## Gracias por contribuir a Recolecta Web 🗑️
+        Gracias por contribuir a Recolecta Web
         
         Usa este template para reportar bugs, proponer fixes o refactorizaciones.
 
   - type: dropdown
     id: issue-type
     attributes:
-      label: 🏷️ Tipo de Issue
+      label: Tipo de Issue
       description: Selecciona el tipo que mejor describe tu reporte
       options:
-        - 🐛 Bug - Algo no funciona correctamente
-        - 🔧 Fix - Propuesta de corrección para un problema conocido
-        - ♻️ Refactor - Mejora del código sin cambiar funcionalidad
-        - 🎨 Code Quality - Mejora de calidad, legibilidad o mantenibilidad
+        - Bug - Algo no funciona correctamente
+        - Fix - Propuesta de corrección para un problema conocido
+        - Refactor - Mejora del código sin cambiar funcionalidad
+        - Code Quality - Mejora de calidad, legibilidad o mantenibilidad
       multiple: false
     validations:
       required: true
@@ -27,7 +27,7 @@ body:
   - type: textarea
     id: description
     attributes:
-      label: 📋 Descripción
+      label: Descripción
       description: Describe claramente el bug, fix o refactor propuesto
       placeholder: |
         Ej. La aplicación falla al intentar guardar una ruta con más de 50 puntos de recolección.
@@ -37,7 +37,7 @@ body:
   - type: textarea
     id: current-behavior
     attributes:
-      label: 🔴 Comportamiento Actual
+      label: Comportamiento Actual
       description: ¿Qué está pasando actualmente?
       placeholder: |
         Describe el comportamiento incorrecto o el código que necesita mejorarse:
@@ -50,7 +50,7 @@ body:
   - type: textarea
     id: expected-behavior
     attributes:
-      label: 🟢 Comportamiento Esperado
+      label: Comportamiento Esperado
       description: ¿Qué debería pasar?
       placeholder: |
         Describe cómo debería funcionar correctamente:
@@ -62,7 +62,7 @@ body:
   - type: textarea
     id: steps-to-reproduce
     attributes:
-      label: 🔄 Pasos para Reproducir (para bugs)
+      label: Pasos para Reproducir (para bugs)
       description: ¿Cómo podemos reproducir el problema?
       placeholder: |
         1. Ir a '...'
@@ -79,30 +79,30 @@ body:
   - type: dropdown
     id: severity
     attributes:
-      label: 🔥 Severidad (para bugs)
+      label: Severidad (para bugs)
       description: ¿Qué tan grave es este bug?
       options:
-        - 🔴 Crítico - La aplicación no funciona / pérdida de datos
-        - 🟡 Alto - Funcionalidad importante afectada
-        - 🟢 Medio - Funcionalidad menor afectada
-        - 🔵 Bajo - Problema cosmético o de UX menor
-        - ⚪ N/A - No aplica (refactor o fix)
+        - Crítico - La aplicación no funciona / pérdida de datos
+        - Alto - Funcionalidad importante afectada
+        - Medio - Funcionalidad menor afectada
+        - Bajo - Problema cosmético o de UX menor
+        - N/A - No aplica (refactor o fix)
     validations:
       required: false
 
   - type: dropdown
     id: component
     attributes:
-      label: 🏗️ Componente Afectado
+      label: Componente Afectado
       description: ¿Qué parte del sistema está afectada?
       options:
-        - 🎨 Frontend - React/TypeScript
-        - ⚙️ Backend - Go/Gin
-        - 🗄️ Base de Datos
-        - 🐳 Docker/Infraestructura
-        - 🌐 Nginx/Web Server
-        - 📱 Múltiple
-        - 🔍 No estoy seguro
+        - Frontend - React/TypeScript
+        - Backend - Go/Gin
+        - Base de Datos
+        - Docker/Infraestructura
+        - Nginx/Web Server
+        - Múltiple
+        - No estoy seguro
       multiple: false
     validations:
       required: true
@@ -110,7 +110,7 @@ body:
   - type: textarea
     id: environment
     attributes:
-      label: 🖥️ Entorno (para bugs)
+      label: Entorno (para bugs)
       description: Información sobre el entorno donde ocurre el problema
       placeholder: |
         - SO: [ej. Windows 11, Ubuntu 22.04, macOS 13]
@@ -128,7 +128,7 @@ body:
   - type: textarea
     id: error-logs
     attributes:
-      label: 📜 Logs de Error
+      label: Logs de Error
       description: Copia los logs relevantes, mensajes de error o stack traces
       placeholder: |
         Pega aquí los logs o mensajes de error completos
@@ -139,7 +139,7 @@ body:
   - type: textarea
     id: proposed-solution
     attributes:
-      label: 💡 Solución Propuesta
+      label: Solución Propuesta
       description: Si tienes una idea de cómo solucionar el problema, descríbela aquí
       placeholder: |
         - Cambios sugeridos en el código
@@ -152,7 +152,7 @@ body:
   - type: textarea
     id: code-references
     attributes:
-      label: 📍 Referencias de Código
+      label: Referencias de Código
       description: Archivos, funciones o líneas de código relacionadas
       placeholder: |
         - Archivo: `frontend/src/components/RouteManager.tsx` (líneas 45-67)
@@ -164,19 +164,19 @@ body:
   - type: dropdown
     id: priority
     attributes:
-      label: 🚦 Prioridad
+      label: Prioridad
       description: ¿Qué tan urgente es resolver esto?
       options:
-        - 🔴 Alta - Afecta producción o bloquea desarrollo
-        - 🟡 Media - Importante pero tiene workaround
-        - 🟢 Baja - Mejora deseable
+        - Alta - Afecta producción o bloquea desarrollo
+        - Media - Importante pero tiene workaround
+        - Baja - Mejora deseable
     validations:
       required: true
 
   - type: textarea
     id: additional-context
     attributes:
-      label: 📎 Contexto Adicional
+      label: Contexto Adicional
       description: Cualquier información adicional relevante
       placeholder: |
         - Capturas de pantalla o videos
@@ -189,7 +189,7 @@ body:
   - type: checkboxes
     id: checklist
     attributes:
-      label: ✅ Checklist
+      label: Checklist
       description: Verifica que has proporcionado suficiente información
       options:
         - label: He buscado en issues existentes y este no está duplicado
