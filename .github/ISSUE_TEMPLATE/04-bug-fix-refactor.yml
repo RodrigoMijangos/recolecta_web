@@ -1,0 +1,220 @@
+name: Bug / Fix / Refactor
+description: Reportar bugs, proponer correcciones o refactorizaciones de código existente
+title: "[BUG] <componente>: <descripción del problema> - Ejemplo general: Error en validación - Ejemplo específico: Falla al guardar rutas con más de 50 puntos"
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Gracias por contribuir a Recolecta Web
+        
+        Usa este template para reportar bugs, proponer fixes o refactorizaciones.
+        
+        **¿Cuándo usar Bug vs Fix?**
+        
+        **Bug**: Usa cuando estás REPORTANDO un problema que encontraste
+        - Ejemplos:
+          - La aplicación se cierra al hacer click en "Guardar ruta"
+          - Los datos no se sincronizan correctamente con el backend
+          - El mapa no muestra las coordenadas GPS correctas
+        
+        **Fix**: Usa cuando ya IDENTIFICASTE la causa y propones una solución
+        - Ejemplos:
+          - Corregir validación de formulario que permite datos inválidos (ya sabes qué validación falla)
+          - Actualizar endpoint deprecado de la API (ya sabes qué cambiar)
+          - Reparar memoria leak en el componente MapView (ya identificaste la causa)
+        
+        **Refactor**: Mejora del código sin cambiar funcionalidad
+        - Ejemplos:
+          - Extraer lógica duplicada a funciones reutilizables
+          - Reorganizar estructura de carpetas
+          - Mejorar nombres de variables y funciones
+
+  - type: dropdown
+    id: issue-type
+    attributes:
+      label: Tipo de Issue
+      description: Selecciona el tipo que mejor describe tu reporte
+      options:
+        - Bug - Algo no funciona correctamente
+        - Fix - Propuesta de corrección para un problema conocido
+        - Refactor - Mejora del código sin cambiar funcionalidad
+        - Code Quality - Mejora de calidad, legibilidad o mantenibilidad
+      multiple: false
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Descripción
+      description: Describe claramente el bug, fix o refactor propuesto
+      placeholder: |
+        Ej. La aplicación falla al intentar guardar una ruta con más de 50 puntos de recolección.
+    validations:
+      required: true
+
+  - type: textarea
+    id: current-behavior
+    attributes:
+      label: Comportamiento Actual
+      description: ¿Qué está pasando actualmente?
+      placeholder: |
+        Describe el comportamiento incorrecto o el código que necesita mejorarse:
+        - ¿Qué hace el sistema ahora?
+        - ¿Dónde ocurre el problema?
+        - ¿Qué código está involucrado?
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Comportamiento Esperado
+      description: ¿Qué debería pasar?
+      placeholder: |
+        Describe cómo debería funcionar correctamente:
+        - ¿Qué debería hacer el sistema?
+        - ¿Cómo debería estar estructurado el código?
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Pasos para Reproducir (para bugs)
+      description: ¿Cómo podemos reproducir el problema?
+      placeholder: |
+        1. Ir a '...'
+        2. Click en '...'
+        3. Ingresar datos '...'
+        4. Observar el error
+      value: |
+        1. 
+        2. 
+        3. 
+    validations:
+      required: false
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severidad (para bugs)
+      description: ¿Qué tan grave es este bug?
+      options:
+        - Crítico - La aplicación no funciona / pérdida de datos
+        - Alto - Funcionalidad importante afectada
+        - Medio - Funcionalidad menor afectada
+        - Bajo - Problema cosmético o de UX menor
+        - N/A - No aplica (refactor o fix)
+    validations:
+      required: false
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Componente Afectado
+      description: ¿Qué parte del sistema está afectada?
+      options:
+        - Frontend - React/TypeScript
+        - Backend - Go/Gin
+        - Base de Datos
+        - Docker/Infraestructura
+        - Nginx/Web Server
+        - Múltiple
+        - No estoy seguro
+      multiple: false
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Entorno (para bugs)
+      description: Información sobre el entorno donde ocurre el problema
+      placeholder: |
+        - SO: [ej. Windows 11, Ubuntu 22.04, macOS 13]
+        - Navegador: [ej. Chrome 119, Firefox 120]
+        - Versión del proyecto: [ej. 0.1.0-alpha]
+        - Docker version: [ej. 20.10.21]
+        - Otros detalles relevantes
+      value: |
+        - SO: 
+        - Navegador: 
+        - Versión: 
+    validations:
+      required: false
+
+  - type: textarea
+    id: error-logs
+    attributes:
+      label: Logs de Error
+      description: Copia los logs relevantes, mensajes de error o stack traces
+      placeholder: |
+        Pega aquí los logs o mensajes de error completos
+      render: shell
+    validations:
+      required: false
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Solución Propuesta
+      description: Si tienes una idea de cómo solucionar el problema, descríbela aquí
+      placeholder: |
+        - Cambios sugeridos en el código
+        - Enfoque de refactorización
+        - Referencias a mejores prácticas
+        - Ejemplos de implementación
+    validations:
+      required: false
+
+  - type: textarea
+    id: code-references
+    attributes:
+      label: Referencias de Código
+      description: Archivos, funciones o líneas de código relacionadas
+      placeholder: |
+        - Archivo: `frontend/src/components/RouteManager.tsx` (líneas 45-67)
+        - Función: `saveRoute()`
+        - Componente: `<MapView />`
+    validations:
+      required: false
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Prioridad
+      description: ¿Qué tan urgente es resolver esto?
+      options:
+        - Alta - Afecta producción o bloquea desarrollo
+        - Media - Importante pero tiene workaround
+        - Baja - Mejora deseable
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Contexto Adicional
+      description: Cualquier información adicional relevante
+      placeholder: |
+        - Capturas de pantalla o videos
+        - Enlaces a discusiones relacionadas
+        - Contexto del negocio
+        - Impacto en usuarios
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      description: Verifica que has proporcionado suficiente información
+      options:
+        - label: He buscado en issues existentes y este no está duplicado
+          required: true
+        - label: He proporcionado suficiente contexto para entender el problema
+          required: true
+        - label: He incluido pasos para reproducir (si es un bug)
+          required: false

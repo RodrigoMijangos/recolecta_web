@@ -1,0 +1,252 @@
+name: Testing Avanzado
+description: Tests de integración, end-to-end, health checks completos del sistema y suites de testing complejas
+title: "[TEST] <tipo>: <descripción del alcance> - Ejemplo general: Suite E2E - Ejemplo específico: Tests E2E para flujo completo de gestión de rutas"
+labels: ["testing", "integration", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Gracias por contribuir a Recolecta Web
+        
+        Este template es para testing **avanzado y complejo**, no para tests unitarios simples.
+        Incluye: tests de integración, E2E, health checks, performance testing, etc.
+        
+        **Nota sobre CI/CD Testing**: Si tu objetivo principal es probar o mejorar el pipeline 
+        de CI/CD con GitHub Actions (workflows, jobs, steps), considera usar este template 
+        seleccionando la opción "CI/CD Pipeline Testing" en el tipo de testing.
+
+  - type: dropdown
+    id: test-type
+    attributes:
+      label: Tipo de Testing
+      description: ¿Qué tipo de testing avanzado se necesita?
+      options:
+        - Integration Testing - Tests de integración entre componentes
+        - End-to-End (E2E) - Tests del flujo completo de usuario
+        - Health Check - Verificación completa del sistema
+        - Performance Testing - Pruebas de carga y rendimiento
+        - Security Testing - Pruebas de seguridad y vulnerabilidades
+        - Smoke Testing - Suite de tests críticos básicos
+        - Load Testing - Pruebas de estrés y capacidad
+        - Regression Testing - Suite de regresión completa
+        - Cross-Browser/Platform - Compatibilidad multi-plataforma
+        - Contract Testing - Tests de contratos entre servicios
+        - CI/CD Pipeline Testing - Tests del workflow de GitHub Actions
+      multiple: true
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Descripción de la Suite de Testing
+      description: Describe qué necesita ser testeado y por qué
+      placeholder: |
+        Ej. Necesitamos una suite de tests E2E que valide el flujo completo desde el login
+        del conductor hasta la finalización de una ruta, incluyendo actualización de GPS,
+        marcado de puntos completados y sincronización con el backend.
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Alcance del Testing
+      description: ¿Qué componentes, funcionalidades o flujos deben ser cubiertos?
+      placeholder: |
+        Componentes/Módulos a testear:
+        - Módulo de autenticación
+        - Sistema de GPS tracking
+        - API de rutas
+        - Base de datos de puntos de recolección
+        - Sistema de notificaciones
+        
+        Flujos críticos:
+        - Login → Asignación de ruta → Navegación → Completado
+        - ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: test-scenarios
+    attributes:
+      label: Escenarios de Prueba
+      description: Lista los escenarios específicos que deben testearse
+      placeholder: |
+        1. **Happy Path**: Usuario completa ruta sin problemas
+           - Login exitoso
+           - Carga de ruta con 20 puntos
+           - GPS tracking activo
+           - Marcado secuencial de puntos
+           - Finalización exitosa
+        
+        2. **Edge Cases**: Conexión intermitente
+           - Pérdida de conexión durante ruta
+           - Sincronización al recuperar conexión
+           - Validación de datos guardados offline
+        
+        3. **Error Handling**: Fallas del sistema
+           - Backend no disponible
+           - GPS no funcional
+           - Datos corruptos
+    validations:
+      required: true
+
+  - type: dropdown
+    id: complexity
+    attributes:
+      label: Complejidad de la Suite
+      description: ¿Qué tan compleja es esta suite de testing?
+      options:
+        - Media - 5-10 test cases, 1-2 días de implementación
+        - Alta - 10-30 test cases, 3-5 días de implementación
+        - Muy Alta - 30+ test cases, más de una semana
+        - Epic - Requiere múltiples suites y fases
+    validations:
+      required: true
+
+  - type: textarea
+    id: tools-frameworks
+    attributes:
+      label: Herramientas y Frameworks
+      description: ¿Qué herramientas o frameworks deberían usarse?
+      placeholder: |
+        Sugerencias o requisitos:
+        - Playwright para E2E
+        - Jest para testing de integración
+        - K6 o Locust para load testing
+        - OWASP ZAP para security testing
+        - Postman/Newman para API testing
+        - Otros...
+    validations:
+      required: false
+
+  - type: textarea
+    id: environment-requirements
+    attributes:
+      label: Requisitos de Entorno
+      description: ¿Qué se necesita para ejecutar estos tests?
+      placeholder: |
+        - Base de datos con datos de prueba
+        - Servicios externos mockeados
+        - Credenciales de testing
+        - Configuración específica de Docker
+        - Variables de entorno necesarias
+        - Recursos mínimos (CPU, RAM, etc.)
+    validations:
+      required: true
+
+  - type: textarea
+    id: success-criteria
+    attributes:
+      label: Criterios de Éxito
+      description: ¿Cómo sabremos que la suite de testing es exitosa?
+      placeholder: |
+        - [ ] Cobertura de código > 80% en componentes críticos
+        - [ ] Todos los escenarios happy path pasan
+        - [ ] Edge cases principales están cubiertos
+        - [ ] Tests corren en menos de X minutos
+        - [ ] Integrado en CI/CD
+        - [ ] Documentación de cómo ejecutar los tests
+        - [ ] Reporte de resultados claro y accionable
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Prioridad
+      description: ¿Qué tan urgente es implementar esta suite?
+      options:
+        - Alta - Crítico para release o producción
+        - Media - Importante para calidad
+        - Baja - Mejora deseable
+    validations:
+      required: true
+
+  - type: textarea
+    id: ci-cd-integration
+    attributes:
+      label: Integración CI/CD
+      description: ¿Cómo debe integrarse con el pipeline de CI/CD?
+      placeholder: |
+        - Ejecutar en cada PR
+        - Ejecutar solo en main branch
+        - Ejecutar nightly
+        - Ejecutar antes de deploy
+        - Configuración de GitHub Actions
+        - Políticas de merge (tests deben pasar)
+    validations:
+      required: false
+
+  - type: textarea
+    id: test-data
+    attributes:
+      label: Datos de Prueba
+      description: ¿Qué datos de prueba se necesitan?
+      placeholder: |
+        - Dataset de rutas de ejemplo
+        - Usuarios de testing (roles diferentes)
+        - Coordenadas GPS de prueba
+        - Estados del sistema para diferentes escenarios
+        - Scripts de seed data
+    validations:
+      required: false
+
+  - type: textarea
+    id: performance-requirements
+    attributes:
+      label: Requisitos de Performance
+      description: Si aplica, especifica métricas de performance esperadas
+      placeholder: |
+        - Tiempo de respuesta máximo: X ms
+        - Throughput mínimo: Y requests/segundo
+        - Concurrencia: Z usuarios simultáneos
+        - Tasa de error aceptable: W%
+        - Uso de recursos (CPU/RAM) bajo carga
+    validations:
+      required: false
+
+  - type: textarea
+    id: maintenance-plan
+    attributes:
+      label: Plan de Mantenimiento
+      description: ¿Cómo se mantendrán y actualizarán estos tests?
+      placeholder: |
+        - Frecuencia de revisión
+        - Responsables de mantenimiento
+        - Proceso de actualización cuando cambie el código
+        - Estrategia de test data refresh
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Contexto Adicional
+      description: Cualquier información adicional relevante
+      placeholder: |
+        - Referencias a incidentes en producción
+        - Bugs críticos que motivaron estos tests
+        - Estándares de la industria a seguir
+        - Enlaces a documentación de herramientas
+        - Ejemplos de suites similares
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist Pre-implementación
+      description: Verifica estos puntos antes de comenzar
+      options:
+        - label: He definido claramente los escenarios de prueba
+          required: true
+        - label: He especificado los criterios de éxito medibles
+          required: true
+        - label: He considerado los requisitos de entorno y datos
+          required: true
+        - label: He evaluado el impacto en el tiempo de CI/CD
+          required: false
+        - label: He consultado con el equipo sobre la estrategia de testing
+          required: false

@@ -1,0 +1,166 @@
+name: Feature Request
+description: Proponer nuevas funcionalidades o mejoras al sistema
+title: "[FEAT] <módulo>: <funcionalidad específica> - Ejemplo general: Sistema de notificaciones - Ejemplo específico: Notificaciones push para cambios de ruta en tiempo real"
+labels: ["enhancement", "feature", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Gracias por contribuir a Recolecta Web
+        
+        Usa este template para proponer nuevas funcionalidades o características.
+
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: Descripción de la Funcionalidad
+      description: Describe claramente la nueva funcionalidad que propones
+      placeholder: |
+        Ej. Implementar un sistema de notificaciones push para alertar a los conductores
+        sobre cambios en tiempo real en sus rutas asignadas.
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problema que Resuelve
+      description: ¿Qué problema o necesidad aborda esta funcionalidad?
+      placeholder: |
+        Actualmente, los conductores solo pueden ver sus rutas al inicio del día y no
+        reciben actualizaciones si hay cambios. Esto genera confusión y pérdida de tiempo.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Solución Propuesta
+      description: ¿Cómo imaginas que debería funcionar esta funcionalidad?
+      placeholder: |
+        Describe:
+        - Comportamiento esperado
+        - Flujo de usuario
+        - Interacciones principales
+        - Casos de uso
+    validations:
+      required: true
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Componente Afectado
+      description: ¿Qué parte del sistema se vería afectada?
+      options:
+        - Frontend - Interfaz de usuario
+        - Backend - API y lógica de negocio
+        - Base de Datos - Esquema o datos
+        - Infraestructura - Docker, nginx, etc.
+        - Múltiple - Varios componentes
+        - No estoy seguro
+      multiple: false
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternativas Consideradas
+      description: ¿Has considerado otras formas de resolver este problema?
+      placeholder: |
+        - Alternativa 1: [descripción]
+        - Alternativa 2: [descripción]
+        - Por qué la solución propuesta es mejor...
+    validations:
+      required: false
+
+  - type: textarea
+    id: user-stories
+    attributes:
+      label: Historias de Usuario
+      description: Describe los casos de uso desde la perspectiva del usuario
+      placeholder: |
+        - Como [rol], quiero [acción] para [beneficio]
+        - Como conductor, quiero recibir notificaciones de cambios de ruta para poder adaptarme rápidamente
+        - Como administrador, quiero poder enviar alertas masivas para notificar emergencias
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Criterios de Aceptación
+      description: ¿Cómo sabremos que la funcionalidad está completa?
+      placeholder: |
+        - [ ] El usuario puede [acción específica]
+        - [ ] El sistema responde con [comportamiento esperado]
+        - [ ] Se muestran [elementos de UI] correctamente
+        - [ ] La funcionalidad funciona en [navegadores/dispositivos]
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Prioridad
+      description: ¿Qué tan importante es esta funcionalidad?
+      options:
+        - Crítica - Esencial para el negocio
+        - Alta - Importante para la experiencia del usuario
+        - Media - Mejora deseable
+        - Baja - Nice to have
+    validations:
+      required: true
+
+  - type: dropdown
+    id: complexity
+    attributes:
+      label: Complejidad Estimada
+      description: ¿Qué tan compleja crees que es esta funcionalidad?
+      options:
+        - Pequeña - Pocos días de desarrollo
+        - Media - 1-2 semanas de desarrollo
+        - Grande - Más de 2 semanas
+        - Epic - Requiere dividirse en múltiples issues
+    validations:
+      required: false
+
+  - type: textarea
+    id: technical-considerations
+    attributes:
+      label: Consideraciones Técnicas
+      description: Aspectos técnicos importantes a considerar
+      placeholder: |
+        - Nuevas dependencias necesarias
+        - Cambios en la arquitectura
+        - Impacto en el rendimiento
+        - Consideraciones de seguridad
+        - Compatibilidad con código existente
+    validations:
+      required: false
+
+  - type: textarea
+    id: mockups
+    attributes:
+      label: Mockups o Diseños (si aplica)
+      description: Enlaces a diseños, wireframes o capturas de pantalla
+      placeholder: |
+        Puedes incluir:
+        - Enlaces a Figma, Sketch, etc.
+        - Imágenes de referencia
+        - Capturas de pantalla de ejemplos similares
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Contexto Adicional
+      description: Cualquier información adicional que sea relevante
+      placeholder: |
+        - Enlaces a discusiones relacionadas
+        - Referencias a documentación
+        - Ejemplos de otros sistemas
+        - Feedback de usuarios
+    validations:
+      required: false
