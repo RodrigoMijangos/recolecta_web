@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 set -e
 
@@ -8,7 +8,14 @@ set -e
 DB_NAME="${POSTGRES_DB:-proyecto_recolecta}"
 DB_USER="${POSTGRES_USER:-recolecta}"
 DB_PORT="${POSTGRES_PORT:-5432}"
-SCRIPT_PATH="/docker-entrypoint-initdb.d/db_script.sql"
+# Usamos socket local para evitar problemas de auth en TCP durante init
+DB_HOST="/var/run/postgresql"
+# BD base para chequeos (siempre existe)
+DEFAULT_DB="postgres"
+# Password para conexiones no interactuantes
+export PGPASSWORD="${POSTGRES_PASSWORD:-${DB_PASSWORD:-}}"
+# Montamos el SQL con sufijo .skip para evitar que el entrypoint lo ejecute por defecto
+SCRIPT_PATH="/docker-entrypoint-initdb.d/db_script.sql.skip"
 
 # =====================
 # COLORES PARA OUTPUT
@@ -43,7 +50,7 @@ database_exists() {
     local query="SELECT 1 FROM pg_database WHERE datname = '$DB_NAME';"
     local result
     
-    result=$(psql -U "$DB_USER" -p "$DB_PORT" -h localhost -t -c "$query" 2>/dev/null || echo "")
+    result=$(psql -U "$DB_USER" -p "$DB_PORT" -h "$DB_HOST" -d "$DEFAULT_DB" -t -c "$query" 2>/dev/null || echo "")
     
     if [ -z "$result" ]; then
         return 1  # BD no existe
@@ -63,17 +70,17 @@ log_info "Puerto: $DB_PORT"
 
 # Esperar a que PostgreSQL esté listo
 log_info "Esperando a que PostgreSQL esté disponible..."
-for i in {1..30}; do
-    if psql -U "$DB_USER" -p "$DB_PORT" -h localhost -c "SELECT 1" &>/dev/null; then
+for i in $(seq 1 30); do
+    if pg_isready -U "$DB_USER" -p "$DB_PORT" -h "$DB_HOST" -d "$DEFAULT_DB" >/dev/null 2>&1; then
         log_success "PostgreSQL está disponible"
         break
     fi
-    
-    if [ $i -eq 30 ]; then
+
+    if [ "$i" -eq 30 ]; then
         log_error "PostgreSQL no está disponible después de 30 intentos"
         exit 1
     fi
-    
+
     sleep 1
 done
 
@@ -86,7 +93,7 @@ if database_exists; then
     log_info "Ejecutando script desde línea 6 en adelante (omitiendo CREATE DATABASE)..."
     
     # Ejecutar solo desde línea 6 (omite CREATE DATABASE y \c)
-    tail -n +6 "$SCRIPT_PATH" | psql -U "$DB_USER" -p "$DB_PORT" -h localhost -d "$DB_NAME" 2>&1
+    tail -n +6 "$SCRIPT_PATH" | psql -U "$DB_USER" -p "$DB_PORT" -h "$DB_HOST" -d "$DB_NAME" 2>&1
     
     if [ $? -eq 0 ]; then
         log_success "Script ejecutado exitosamente (modo de actualización)"
@@ -100,7 +107,7 @@ else
     log_info "Ejecutando script completo (creando BD)..."
     
     # Ejecutar script completo
-    psql -U "$DB_USER" -p "$DB_PORT" -h localhost -f "$SCRIPT_PATH" 2>&1
+    psql -U "$DB_USER" -p "$DB_PORT" -h "$DB_HOST" -d "$DEFAULT_DB" -f "$SCRIPT_PATH" 2>&1
     
     if [ $? -eq 0 ]; then
         log_success "Script ejecutado exitosamente (primera creación)"
@@ -117,10 +124,10 @@ fi
 
 log_info "Obteniendo estadísticas finales..."
 
-TABLE_COUNT=$(psql -U "$DB_USER" -p "$DB_PORT" -h localhost -d "$DB_NAME" -t -c \
+TABLE_COUNT=$(psql -U "$DB_USER" -p "$DB_PORT" -h "$DB_HOST" -d "$DB_NAME" -t -c \
     "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE';")
 
-INDEX_COUNT=$(psql -U "$DB_USER" -p "$DB_PORT" -h localhost -d "$DB_NAME" -t -c \
+INDEX_COUNT=$(psql -U "$DB_USER" -p "$DB_PORT" -h "$DB_HOST" -d "$DB_NAME" -t -c \
     "SELECT COUNT(*) FROM pg_indexes WHERE schemaname = 'public';")
 
 echo ""
