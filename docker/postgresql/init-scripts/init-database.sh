@@ -16,6 +16,8 @@ DEFAULT_DB="postgres"
 export PGPASSWORD="${POSTGRES_PASSWORD:-${DB_PASSWORD:-}}"
 # Montamos el SQL con sufijo .skip para evitar que el entrypoint lo ejecute por defecto
 SCRIPT_PATH="/docker-entrypoint-initdb.d/db_script.sql.skip"
+# Seed
+SEED_PATH="/docker-entrypoint-initdb.d/seed.sql.skip"
 
 # =====================
 # COLORES PARA OUTPUT
@@ -67,6 +69,7 @@ log_info "Iniciando script de inicialización de base de datos..."
 log_info "Base de datos: $DB_NAME"
 log_info "Usuario: $DB_USER"
 log_info "Puerto: $DB_PORT"
+log_info "Seed path: $SEED_PATH"
 
 # Esperar a que PostgreSQL esté listo
 log_info "Esperando a que PostgreSQL esté disponible..."
@@ -83,6 +86,8 @@ for i in $(seq 1 30); do
 
     sleep 1
 done
+
+CREATED_DB=0
 
 # =====================
 # VERIFICAR SI BD EXISTE
@@ -105,6 +110,7 @@ if database_exists; then
 else
     log_info "La base de datos '$DB_NAME' no existe"
     log_info "Ejecutando script completo (creando BD)..."
+    CREATED_DB=1
     
     # Ejecutar script completo
     psql -U "$DB_USER" -p "$DB_PORT" -h "$DB_HOST" -d "$DEFAULT_DB" -f "$SCRIPT_PATH" 2>&1
@@ -115,6 +121,25 @@ else
     else
         log_error "Error al ejecutar el script"
         exit 1
+    fi
+fi
+
+# =====================
+# SEED (solo en creación inicial si existe archivo)
+# =====================
+
+if [ "$CREATED_DB" -eq 1 ]; then
+    if [ -f "$SEED_PATH" ]; then
+        log_info "Ejecutando seed: $SEED_PATH"
+        psql -U "$DB_USER" -p "$DB_PORT" -h "$DB_HOST" -d "$DB_NAME" -f "$SEED_PATH" 2>&1
+        if [ $? -eq 0 ]; then
+            log_success "Seed ejecutado correctamente"
+        else
+            log_error "Falló la ejecución del seed"
+            exit 1
+        fi
+    else
+        log_info "No se encontró seed en $SEED_PATH. Continuando sin seed."
     fi
 fi
 
