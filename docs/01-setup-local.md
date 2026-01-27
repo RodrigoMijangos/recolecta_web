@@ -130,8 +130,8 @@ docker compose -f docker/docker.compose.yml ps
 - **Credenciales:** desde `.env` (`DB_USER`, `DB_PASSWORD`, `DB_NAME`)
 
 Inicialización automática:
-- `docker/postgresql/init-scripts/00-init-database.sh` — crea schema
-- `docker/postgresql/init-scripts/01-seed-if-empty.sh` — carga datos iniciales
+- `docker/postgresql/init-scripts/init-database.sh` — crea schema
+- `docker/postgresql/init-scripts/seed-if-empty.sh` — carga datos iniciales
 - Schema version table: `schema_version` (historial de cambios)
 
 ### Redis (6379)
