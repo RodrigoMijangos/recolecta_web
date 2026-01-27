@@ -49,7 +49,7 @@ head -20 docker/postgresql/dumps/proyecto_recolecta-*.sql
 
 ### Procedimiento seguro (paso 1: staging)
 
-Crear BD temporal para probar restore **sin tocar producción**:
+Crear BD temporal para probar restore **sin tocar la base de datos principal**:
 
 ```bash
 # 1. Conectar a PostgreSQL
@@ -148,7 +148,7 @@ docker compose -f docker/docker.compose.yml --env-file .env exec -T database \
 Cuando haces `docker compose up` la **primera vez**:
 
 1. `00-init-database.sh` crea schema y registra `schema_version = 1.0.0`
-2. `01-seed-if-empty.sh` verifica que tabla `rol` está vacía y ejecuta seed
+2. `seed-if-empty.sh` verifica que tabla `rol` está vacía y ejecuta seed
 3. Seed inserta 3 roles (admin, operador, conductor), 2 colonias, 1 usuario admin
 4. Registra `schema_version = 1.0.1`
 
@@ -322,7 +322,7 @@ Cuando escales a producción/cloud:
    - GitHub Actions job para dump diario
    - Restored testing en CI
 
-4. **Monitoreo:** alertas y métricasde backup
+4. **Monitoreo:** alertas y métricas de backup
    - Cloudwatch: tamaño de dump, duración
    - Alertas si dump falla
 
@@ -334,7 +334,7 @@ Cuando escales a producción/cloud:
   - `init_dump.sh` — crea dump
   - `init_seeding.sh` — re-seed manual
   - `00-init-database.sh` — schema init
-  - `01-seed-if-empty.sh` — seed automático
+  - `seed-if-empty.sh` — seed automático
 - Schema definition: `gin-backend/db_script.sql`
 - Seed data: `docker/postgresql/seeds/seed.sql`
 
