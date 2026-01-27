@@ -1,0 +1,61 @@
+# =====================================================
+# Git Attributes - Line Ending Control
+# =====================================================
+# Fuerza LF para archivos que se ejecutan en contenedores Linux
+# para evitar errores "bad interpreter" por CRLF.
+
+# =====================================================
+# EXCEPCIONES: NO TOCAR
+# =====================================================
+# Gin-backend y frontend mantienen sus propios line endings
+gin-backend/** -text
+frontend/** -text
+
+# =====================================================
+# Scripts de Shell (ejecutados en contenedores Linux)
+# =====================================================
+*.sh text eol=lf
+
+# =====================================================
+# SQL (ejecutados en PostgreSQL en contenedor)
+# =====================================================
+*.sql text eol=lf
+
+# =====================================================
+# Configuración de Docker/Compose
+# =====================================================
+Dockerfile* text eol=lf
+*.dockerfile text eol=lf
+docker-compose.yml text eol=lf
+docker.compose.yml text eol=lf
+docker-compose.*.yml text eol=lf
+docker.compose.*.yml text eol=lf
+
+# =====================================================
+# Configuración de servicios (Redis, Nginx, etc.)
+# =====================================================
+*.conf text eol=lf
+nginx.conf text eol=lf
+redis.conf text eol=lf
+
+# =====================================================
+# YAML/Config general
+# =====================================================
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# =====================================================
+# Markdown y documentación
+# =====================================================
+*.md text eol=lf
+
+# =====================================================
+# Variables de entorno
+# =====================================================
+.env* text eol=lf
+
+# =====================================================
+# Scripts de CI/CD
+# =====================================================
+.github/**/*.sh text eol=lf
+.github/**/*.yml text eol=lf
