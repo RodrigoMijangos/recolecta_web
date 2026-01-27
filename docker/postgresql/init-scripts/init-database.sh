@@ -107,6 +107,25 @@ if database_exists; then
         log_error "Error al ejecutar el script"
         exit 1
     fi
+    
+    # Crear schema_version si no existe (orchestration table)
+    log_info "Verificando tabla de versioning..."
+    psql -U "$DB_USER" -p "$DB_PORT" -h "$DB_HOST" -d "$DB_NAME" <<-EOSQL
+		CREATE TABLE IF NOT EXISTS schema_version (
+		    version_id SERIAL PRIMARY KEY,
+		    version VARCHAR(50) NOT NULL UNIQUE,
+		    description TEXT,
+		    script_name VARCHAR(255),
+		    applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+		    applied_by VARCHAR(100) DEFAULT CURRENT_USER,
+		    checksum VARCHAR(64)
+		);
+		
+		INSERT INTO schema_version (version, description, script_name)
+		VALUES ('1.0.0', 'Schema inicial completo', 'db_script.sql')
+		ON CONFLICT (version) DO NOTHING;
+	EOSQL
+    log_success "Tabla schema_version verificada"
 else
     log_info "La base de datos '$DB_NAME' no existe"
     log_info "Ejecutando script completo (creando BD)..."
@@ -122,6 +141,24 @@ else
         log_error "Error al ejecutar el script"
         exit 1
     fi
+    
+    # Crear schema_version en primera creación (orchestration table)
+    log_info "Creando tabla de versioning..."
+    psql -U "$DB_USER" -p "$DB_PORT" -h "$DB_HOST" -d "$DB_NAME" <<-EOSQL
+		CREATE TABLE IF NOT EXISTS schema_version (
+		    version_id SERIAL PRIMARY KEY,
+		    version VARCHAR(50) NOT NULL UNIQUE,
+		    description TEXT,
+		    script_name VARCHAR(255),
+		    applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+		    applied_by VARCHAR(100) DEFAULT CURRENT_USER,
+		    checksum VARCHAR(64)
+		);
+		
+		INSERT INTO schema_version (version, description, script_name)
+		VALUES ('1.0.0', 'Schema inicial completo', 'db_script.sql');
+	EOSQL
+    log_success "Tabla schema_version creada"
 fi
 
 # =====================
