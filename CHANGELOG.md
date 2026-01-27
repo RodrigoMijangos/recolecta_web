@@ -6,6 +6,19 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
 
 ---
 
+# 0.4.0-alpha - 2026-01-27
+## Rodrigo Mijangos [Issue #33](https://github.com/RodrigoMijangos/recolecta_web/issues/33)
+### 🆕 Agregado
+- Scripts de inicialización de base de datos en Docker.
+- Scripts de seed automático de base de datos en Docker.
+- Scripts para dump y restore de base de datos en Docker.
+- Creación de Seeders para tablas principales.
+- Gitattributes para manejo de archivos sensibles a fin de línea.
+
+## ✏️ Cambiado
+- Configuración de Docker Compose para PostgreSQL.
+- Configuración de la persistencia de Datos de PostgreSQL.
+
 # 0.3.0-alpha - 2026-01-27
 ## Rodrigo Mijangos [Issue #34](https://github.com/RodrigoMijangos/recolecta_web/issues/34)
 ### 🆕 Agregado
