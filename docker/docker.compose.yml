@@ -22,6 +22,8 @@ services:
       - ./postgresql/dumps:/dumps
       # Ejecutar wrapper en init (asegúrate de LF en el repo)
       - ./postgresql/init-scripts/init-database.sh:/docker-entrypoint-initdb.d/00-init-database.sh:ro
+      # Ejecutar seed con versioning después del init
+      - ./postgresql/init-scripts/seed-if-empty.sh:/docker-entrypoint-initdb.d/01-seed-if-empty.sh:ro
     networks:
       - app_internal_net
 
