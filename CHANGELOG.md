@@ -6,7 +6,21 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
 
 ---
 
-## ## 0.2.0-alpha - 2026-01-20
+# 0.3.0-alpha - 2026-01-27
+## Rodrigo Mijangos [Issue #34](https://github.com/RodrigoMijangos/recolecta_web/issues/34)
+### 🆕 Agregado
+- Documentación inicial para operaciones de base de datos con Docker.
+- Documentación de setup local con Docker Compose.
+- Documentación de testing local para redis.
+- Documentación de seeding automático de base de datos.
+- Documentación de estructura del proyecto.
+- Documentación de orquestación con Docker Compose.
+- Documentación de configuración de variables de entorno.
+- Documentación de requisitos previos para desarrollo local.
+- Documentación de quick start para levantar ambiente local.
+- Documentación de enlaces rápidos para setup local y operaciones de base de datos.
+
+## 0.2.0-alpha - 2026-01-20
 
 ### Agregado
 - Se agrega información util para nuevos desarrolladores.
@@ -18,10 +32,7 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
 - Información que muestra README.md actualizada.
 - Configuración de Docker Compose actualizada.
 - Redis requiere una contraseña de manera obligatoria.
-
-### Eliminado
-- 
-
+  
 ---
 
 ## 0.1.0-alpha - 2026-01-20
