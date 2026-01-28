@@ -6,6 +6,18 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
 
 ---
 
+# 0.4.1-alpha - 2026-01-27
+## Rodrigo Mijangos [Issue #40](https://github.com/RodrigoMijangos/recolecta_web/issues/40)
+### 🔧 Arreglado
+- Restauración de carpeta `docs/` que fue eliminada accidentalmente por cherry-pick en issue #33.
+- Cherry-pick del commit `3a526dd` (de issue #34) para recuperar documentación estructurada.
+
+### 📝 Notas
+- Los archivos recuperados incluyen:
+  - `docs/01-setup-local.md` (305 líneas)
+  - `docs/02-database-operations.md` (343 líneas)
+- Esta restauración asegura que la documentación del issue #34 permanezca en el proyecto.
+
 # 0.4.0-alpha - 2026-01-27
 ## Rodrigo Mijangos [Issue #33](https://github.com/RodrigoMijangos/recolecta_web/issues/33)
 ### 🆕 Agregado
