@@ -72,6 +72,8 @@ ENVIRONMENT=development
 - Usa `.env.example` como referencia
 - En producción, usa gestión de secretos
 
+> Nota: Docker Compose realiza la interpolación de variables (ej. `${DB_USER}`) al parsear el `docker-compose.yml`. Si tu `.env` está en la raíz y el archivo de Compose está en `docker/`, usa siempre `--env-file .env` al ejecutar `docker compose` (por ejemplo `docker compose --env-file .env -f docker/docker.compose.yml up -d`) para asegurar que las variables se apliquen y evitar warnings. Alternativamente puedes copiar `.env` a `docker/.env` o usar `env_file` en el YAML.
+
 ### 3. Levantar servicios
 
 ```bash
@@ -80,7 +82,7 @@ docker compose -f docker/docker.compose.yml --env-file .env up -d
 
 Ver logs:
 ```bash
-docker compose -f docker/docker.compose.yml logs -f
+docker compose --env-file .env -f docker/docker.compose.yml logs -f
 ```
 
 ---
@@ -101,21 +103,21 @@ curl http://localhost/health
 ### PostgreSQL
 ```bash
 # Reemplaza <usuario> y <nombre_db> con los valores de tu .env
-docker compose -f docker/docker.compose.yml exec -T database \
+docker compose --env-file .env -f docker/docker.compose.yml exec -T database \
   psql -U <usuario> -d <nombre_db> -c "SELECT version();"
 ```
 
 ### Redis
 ```bash
 # Reemplaza <password> con tu REDIS_PASSWORD
-docker compose -f docker/docker.compose.yml exec redis \
+docker compose --env-file .env -f docker/docker.compose.yml exec redis \
   redis-cli -a <password> PING
 # Debería responder: PONG
 ```
 
 ### Contenedores corriendo
 ```bash
-docker compose -f docker/docker.compose.yml ps
+docker compose --env-file .env -f docker/docker.compose.yml ps
 # Deberías ver 3 contenedores "Up"
 ```
 
@@ -181,38 +183,38 @@ ENVIRONMENT=development             # development | production
 docker compose -f docker/docker.compose.yml --env-file .env up -d
 
 # Ver estado
-docker compose -f docker/docker.compose.yml ps
+docker compose --env-file .env -f docker/docker.compose.yml ps
 
 # Detener (sin eliminar datos)
-docker compose -f docker/docker.compose.yml down
+docker compose --env-file .env -f docker/docker.compose.yml down
 
 # Detener y eliminar TODOS los datos
-docker compose -f docker/docker.compose.yml down -v
+docker compose --env-file .env -f docker/docker.compose.yml down -v
 ```
 
 ### Logs
 ```bash
 # Todos los servicios
-docker compose -f docker/docker.compose.yml logs -f
+docker compose --env-file .env -f docker/docker.compose.yml logs -f
 
 # Solo PostgreSQL
-docker compose -f docker/docker.compose.yml logs -f database
+docker compose --env-file .env -f docker/docker.compose.yml logs -f database
 
 # Últimas 50 líneas
-docker compose -f docker/docker.compose.yml logs --tail=50 database
+docker compose --env-file .env -f docker/docker.compose.yml logs --tail=50 database
 ```
 
 ### Acceso a contenedores
 ```bash
 # Shell en PostgreSQL
-docker compose -f docker/docker.compose.yml exec database sh
+docker compose --env-file .env -f docker/docker.compose.yml exec database sh
 
 # psql en PostgreSQL
-docker compose -f docker/docker.compose.yml exec -T database \
+docker compose --env-file .env -f docker/docker.compose.yml exec -T database \
   psql -U <usuario> -d <nombre_db>
 
 # Redis CLI
-docker compose -f docker/docker.compose.yml exec redis \
+docker compose --env-file .env -f docker/docker.compose.yml exec redis \
   redis-cli -a <password>
 ```
 

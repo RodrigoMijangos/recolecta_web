@@ -6,6 +6,14 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
 
 ---
 
+# [Sin liberar]
+## Rodrigo Mijangos [Issue #42]()
+### 🆕 Agregado
+- Healthcheck para servicio de postgresql.
+### ✏️ Cambiado
+- Actualización de comandos en documentación para levantar servicios con docker compose v2.
+- Explicación del uso de `--env-file` en docker compose para evitar warnings de variables de entorno.
+
 # 0.4.1-alpha - 2026-01-27
 ## Rodrigo Mijangos [Issue #40](https://github.com/RodrigoMijangos/recolecta_web/issues/40)
 ### 🔧 Arreglado
