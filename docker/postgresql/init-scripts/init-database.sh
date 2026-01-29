@@ -61,6 +61,22 @@ database_exists() {
     fi
 }
 
+# Calcular checksum SHA256 de archivo (soporta sha256sum o openssl)
+compute_checksum() {
+    file="$1"
+    if [ ! -f "$file" ]; then
+        echo ""
+        return
+    fi
+    if command -v sha256sum >/dev/null 2>&1; then
+        sha256sum "$file" | awk '{print $1}'
+    elif command -v openssl >/dev/null 2>&1; then
+        openssl dgst -sha256 "$file" | awk '{print $2}'
+    else
+        echo ""
+    fi
+}
+
 # =====================
 # MAIN SCRIPT
 # =====================
@@ -93,7 +109,23 @@ CREATED_DB=0
 # VERIFICAR SI BD EXISTE
 # =====================
 
-if database_exists; then
+# Crear/Verificar schema_version (orchestration table)
+    log_info "Verificando tabla de versioning..."
+    psql -U "$DB_USER" -p "$DB_PORT" -h "$DB_HOST" -d "$DB_NAME" <<-EOSQL
+        CREATE TABLE IF NOT EXISTS schema_version (
+            version_id SERIAL PRIMARY KEY,
+            script_name VARCHAR(255) NOT NULL,
+            type VARCHAR(20) NOT NULL,
+            checksum VARCHAR(64) NOT NULL,
+            description TEXT,
+            applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            applied_by VARCHAR(100) DEFAULT CURRENT_USER,
+            UNIQUE (script_name, checksum)
+        );
+EOSQL
+
+if database_exists; then    
+    log_success "Tabla schema_version verificada"
     log_warning "La base de datos '$DB_NAME' ya existe"
     log_info "Ejecutando script desde línea 6 en adelante (omitiendo CREATE DATABASE)..."
     
@@ -103,29 +135,20 @@ if database_exists; then
     if [ $? -eq 0 ]; then
         log_success "Script ejecutado exitosamente (modo de actualización)"
         log_info "Estrategia: PARCIAL (líneas 6+)"
+        # Registrar checksum del schema aplicado (modo actualización)
+        schema_checksum=$(compute_checksum "$SCRIPT_PATH" || echo "")
+        if [ -n "$schema_checksum" ]; then
+            psql -U "$DB_USER" -p "$DB_PORT" -h "$DB_HOST" -d "$DB_NAME" <<-EOSQL
+                INSERT INTO schema_version (script_name, type, checksum, description)
+                VALUES ('db_script.sql', 'schema', '$schema_checksum', 'applied update')
+                ON CONFLICT (script_name, checksum) DO NOTHING;
+EOSQL
+            log_info "Registrado schema checksum: $schema_checksum"
+        fi
     else
         log_error "Error al ejecutar el script"
         exit 1
     fi
-    
-    # Crear schema_version si no existe (orchestration table)
-    log_info "Verificando tabla de versioning..."
-    psql -U "$DB_USER" -p "$DB_PORT" -h "$DB_HOST" -d "$DB_NAME" <<-EOSQL
-		CREATE TABLE IF NOT EXISTS schema_version (
-		    version_id SERIAL PRIMARY KEY,
-		    version VARCHAR(50) NOT NULL UNIQUE,
-		    description TEXT,
-		    script_name VARCHAR(255),
-		    applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-		    applied_by VARCHAR(100) DEFAULT CURRENT_USER,
-		    checksum VARCHAR(64)
-		);
-		
-		INSERT INTO schema_version (version, description, script_name)
-		VALUES ('1.0.0', 'Schema inicial completo', 'db_script.sql')
-		ON CONFLICT (version) DO NOTHING;
-	EOSQL
-    log_success "Tabla schema_version verificada"
 else
     log_info "La base de datos '$DB_NAME' no existe"
     log_info "Ejecutando script completo (creando BD)..."
@@ -137,6 +160,16 @@ else
     if [ $? -eq 0 ]; then
         log_success "Script ejecutado exitosamente (primera creación)"
         log_info "Estrategia: COMPLETA (líneas 1+)"
+        # Registrar checksum del schema aplicado (primera creación)
+        schema_checksum=$(compute_checksum "$SCRIPT_PATH" || echo "")
+        if [ -n "$schema_checksum" ]; then
+            psql -U "$DB_USER" -p "$DB_PORT" -h "$DB_HOST" -d "$DB_NAME" <<-EOSQL
+                INSERT INTO schema_version (script_name, type, checksum, description)
+                VALUES ('db_script.sql', 'schema', '$schema_checksum', 'initial apply')
+                ON CONFLICT (script_name, checksum) DO NOTHING;
+EOSQL
+            log_info "Registrado schema checksum: $schema_checksum"
+        fi
     else
         log_error "Error al ejecutar el script"
         exit 1
@@ -145,19 +178,17 @@ else
     # Crear schema_version en primera creación (orchestration table)
     log_info "Creando tabla de versioning..."
     psql -U "$DB_USER" -p "$DB_PORT" -h "$DB_HOST" -d "$DB_NAME" <<-EOSQL
-		CREATE TABLE IF NOT EXISTS schema_version (
-		    version_id SERIAL PRIMARY KEY,
-		    version VARCHAR(50) NOT NULL UNIQUE,
-		    description TEXT,
-		    script_name VARCHAR(255),
-		    applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-		    applied_by VARCHAR(100) DEFAULT CURRENT_USER,
-		    checksum VARCHAR(64)
-		);
-		
-		INSERT INTO schema_version (version, description, script_name)
-		VALUES ('1.0.0', 'Schema inicial completo', 'db_script.sql');
-	EOSQL
+        CREATE TABLE IF NOT EXISTS schema_version (
+            version_id SERIAL PRIMARY KEY,
+            script_name VARCHAR(255) NOT NULL,
+            type VARCHAR(20) NOT NULL,
+            checksum VARCHAR(64) NOT NULL,
+            description TEXT,
+            applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            applied_by VARCHAR(100) DEFAULT CURRENT_USER,
+            UNIQUE (script_name, checksum)
+        );
+EOSQL
     log_success "Tabla schema_version creada"
 fi
 
@@ -171,6 +202,16 @@ if [ "$CREATED_DB" -eq 1 ]; then
         psql -U "$DB_USER" -p "$DB_PORT" -h "$DB_HOST" -d "$DB_NAME" -f "$SEED_PATH" 2>&1
         if [ $? -eq 0 ]; then
             log_success "Seed ejecutado correctamente"
+            # Registrar checksum del seed aplicado
+            seed_checksum=$(compute_checksum "$SEED_PATH" || echo "")
+            if [ -n "$seed_checksum" ]; then
+                psql -U "$DB_USER" -p "$DB_PORT" -h "$DB_HOST" -d "$DB_NAME" <<-EOSQL
+                    INSERT INTO schema_version (script_name, type, checksum, description)
+                    VALUES ('seed.sql', 'seed', '$seed_checksum', 'initial seed')
+                    ON CONFLICT (script_name, checksum) DO NOTHING;
+EOSQL
+                log_info "Registrado seed checksum: $seed_checksum"
+            fi
         else
             log_error "Falló la ejecución del seed"
             exit 1
