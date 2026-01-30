@@ -1,4 +1,4 @@
-version: '3,8'
+version: '3.8'
 
 services:
   backend:
@@ -8,4 +8,6 @@ services:
 
     working_dir: /app
 
-    command: air
+    # Nota: este compose es opcional para dev local.
+    # Si quieres hot-reload con Air, instala air en la imagen o monta el binario.
+    # command: air
