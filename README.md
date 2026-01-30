@@ -2,7 +2,7 @@
 
 > Meta-repo de **orquestación y arquitectura** que integra y coordina los submódulos del proyecto
 
-**Versión:** `0.1.0-alpha` | **Estado:** En desarrollo 🚧
+**Versión:** `0.5.0-alpha` | **Estado:** En desarrollo 🚧
 
 ---
 
