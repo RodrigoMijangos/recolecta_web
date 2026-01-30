@@ -305,6 +305,38 @@ docker compose -f docker/docker.compose.yml --env-file .env exec database \
 
 ---
 
+## 🧪 Testing & Validation
+
+Para validar que schema, seed y persistencia funcionan correctamente:
+
+### Suite de Tests PostgreSQL
+
+```bash
+# Ejecutar suite completa (recomendado antes de commit)
+bash scripts/tests/postgres/run_all.sh
+
+# Ejecutar con traza detallada (debug)
+bash scripts/tests/postgres/run_all.sh --trace
+
+# Ejecutar healthcheck solamente
+bash scripts/tests/postgres/test_healthcheck.sh
+
+# Validar schema + seed checksums
+bash scripts/tests/postgres/test_seed_validation.sh --mode hybrid
+
+# Validar persistencia tras reinicio
+bash scripts/tests/postgres/test_persistence.sh
+```
+
+**Documentación completa:** Ver [testing/postgres-tests.md](testing/postgres-tests.md)
+
+**Tablas validadas:**
+- `schema_version` (checksums de schema/seed)
+- `rol`, `usuario` (mínimo 1 y 2 filas respectivamente)
+- `camion`, `ruta`, `punto_recoleccion`, `colonia`, `domicilio` (mínimo 1 cada una)
+
+---
+
 ## 🔮 Futuro: Migration a Enterprise
 
 Cuando escales a producción/cloud:
