@@ -6,16 +6,22 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
 
 ---
 
-# [Sin liberar]
-## Rodrigo Mijangos [Issue #42]()
+# 0.5.0-alpha - 2026-01-30
+## Rodrigo Mijangos [Issue #40](https://github.com/RodrigoMijangos/recolecta_web/issues/40)
 ### 🆕 Agregado
 - Healthcheck para servicio de postgresql.
+- Test para verificación funcional de CRUD básico en postgresql.
+- Test para verificacion de schema y seeding en postgresql.
+- Test para verificación de persistencia de datos tras reinicio de contenedor intencionado.
+- Documentación de suite de tests de postgresql en `docs/testing/postgres-tests.md`.
+
 ### ✏️ Cambiado
 - Actualización de comandos en documentación para levantar servicios con docker compose v2.
 - Explicación del uso de `--env-file` en docker compose para evitar warnings de variables de entorno.
+- `init-database.sh` ahora utiliza una tabla de control con checksum para validar que schema y seeding se ha aplicado recientemente.
+- `seed-if-empty.sh` ahora inserta su checksum en la tabla de control tras insertar datos.
+- Cambios menores de documentacion general.
 
-# 0.4.1-alpha - 2026-01-27
-## Rodrigo Mijangos [Issue #40](https://github.com/RodrigoMijangos/recolecta_web/issues/40)
 ### 🔧 Arreglado
 - Restauración de carpeta `docs/` que fue eliminada accidentalmente por cherry-pick en issue #33.
 - Cherry-pick del commit `3a526dd` (de issue #34) para recuperar documentación estructurada.
@@ -23,9 +29,9 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
 
 ### 📝 Notas
 - Los archivos recuperados incluyen:
-  - `docs/01-setup-local.md` (305 líneas)
-  - `docs/02-database-operations.md` (343 líneas)
-  - `docs/testing/redis-tests.md` (192 líneas) - Documenta suite de tests de Redis
+  - `docs/01-setup-local.md` 
+  - `docs/02-database-operations.md`
+  - `docs/testing/redis-tests.md` - Documenta suite de tests de Redis
 - Esta restauración asegura que toda la documentación eliminada sea recuperada.
 - Conflictos en README.md y .gitignore resueltos manteniendo versiones actuales.
 
