@@ -2,7 +2,7 @@
 
 > Meta-repo de **orquestación y arquitectura** que integra y coordina los submódulos del proyecto
 
-**Versión:** `0.1.0-alpha` | **Estado:** En desarrollo 🚧
+**Versión:** `0.5.0-alpha` | **Estado:** En desarrollo 🚧
 
 ---
 
@@ -69,7 +69,8 @@ Para documentación completa según tu rol:
 | 👨‍💻 **Desarrolladores (Backend)** | [gin-backend/README.md](gin-backend/README.md) |
 | 🔧 **DevOps / Setup Local** | [docs/01-setup-local.md](docs/01-setup-local.md) |
 | 🗄️ **Database Operations** | [docs/02-database-operations.md](docs/02-database-operations.md) |
-| 🧪 **Testing** | [docs/testing/redis-tests.md](docs/testing/redis-tests.md) |
+| 🧪 **Testing - PostgreSQL** | [docs/testing/postgres-tests.md](docs/testing/postgres-tests.md) |
+| 🧪 **Testing - Redis** | [docs/testing/redis-tests.md](docs/testing/redis-tests.md) |
 
 ---
 
@@ -91,9 +92,22 @@ docker compose -f docker/docker.compose.yml --env-file .env up -d --force-recrea
 
 **¿Ver logs?**
 ```bash
-docker compose -f docker/docker.compose.yml logs -f
+docker compose -f docker/docker.compose.yml --env-file .env logs -f
 ```
 
+**¿Validar salud de servicios?**
+```bash
+# Suite completa de tests PostgreSQL (healthcheck + validación + persistencia)
+bash scripts/tests/postgres/run_all.sh
+
+# Solo healthcheck rápido de PostgreSQL
+bash scripts/tests/postgres/test_healthcheck.sh
+
+# Healthcheck de Redis
+bash scripts/tests/redis/run_redis_healthchecks.sh
+```
+
+📖 **Documentación de tests:** [docs/testing/postgres-tests.md](docs/testing/postgres-tests.md) (PostgreSQL) | [docs/testing/redis-tests.md](docs/testing/redis-tests.md) (Redis)  
 📖 **Troubleshooting completo:** [docs/01-setup-local.md#troubleshooting](docs/01-setup-local.md#troubleshooting)
 
 ---

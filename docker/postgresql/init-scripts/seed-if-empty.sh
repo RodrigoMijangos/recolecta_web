@@ -17,7 +17,6 @@ DB_PORT="${POSTGRES_PORT:-5432}"
 DB_HOST="/var/run/postgresql"
 export PGPASSWORD="${POSTGRES_PASSWORD:-${DB_PASSWORD:-}}"
 SEED_PATH="/docker-entrypoint-initdb.d/seed.sql.skip"
-SEED_VERSION="1.0.1"
 
 # =====================
 # COLORES PARA OUTPUT
@@ -48,10 +47,27 @@ log_error() {
     echo -e "${RED}[✗]${NC} $1"
 }
 
-check_seed_version() {
+# Calcular checksum SHA256 de archivo (soporta sha256sum o openssl)
+compute_checksum() {
+    file="$1"
+    if [ ! -f "$file" ]; then
+        echo ""
+        return
+    fi
+    if command -v sha256sum >/dev/null 2>&1; then
+        sha256sum "$file" | awk '{print $1}'
+    elif command -v openssl >/dev/null 2>&1; then
+        openssl dgst -sha256 "$file" | awk '{print $2}'
+    else
+        echo ""
+    fi
+}
+
+check_seed_applied() {
+    local seed_checksum="$1"
     local result
     result=$(psql -U "$DB_USER" -p "$DB_PORT" -h "$DB_HOST" -d "$DB_NAME" -t -c \
-        "SELECT EXISTS(SELECT 1 FROM schema_version WHERE version = '$SEED_VERSION');" 2>/dev/null || echo "f")
+        "SELECT EXISTS(SELECT 1 FROM schema_version WHERE script_name = 'seed.sql' AND checksum = '$seed_checksum');" 2>/dev/null || echo "f")
     echo "$result" | tr -d '[:space:]'
 }
 
@@ -75,9 +91,10 @@ if [ ! -f "$SEED_PATH" ]; then
     exit 0
 fi
 
-# Verificar si ya se ejecutó este seed (usando versioning)
-if [ "$(check_seed_version)" = "t" ]; then
-    log_warning "Seed versión $SEED_VERSION ya fue aplicado anteriormente"
+# Verificar si ya se ejecutó este seed (usando checksum)
+SEED_CHECKSUM=$(compute_checksum "$SEED_PATH")
+if [ -n "$SEED_CHECKSUM" ] && [ "$(check_seed_applied "$SEED_CHECKSUM")" = "t" ]; then
+    log_warning "Seed ya fue aplicado anteriormente (checksum: $SEED_CHECKSUM)"
     exit 0
 fi
 
@@ -87,10 +104,12 @@ ROL_COUNT=$(check_table_has_data "rol")
 if [ "$ROL_COUNT" != "0" ] && [ -n "$ROL_COUNT" ]; then
     log_warning "Tabla 'rol' ya contiene datos ($ROL_COUNT registros). Omitiendo seed."
     # Registrar el seed como aplicado aunque no se ejecute (datos ya existen)
-    psql -U "$DB_USER" -p "$DB_PORT" -h "$DB_HOST" -d "$DB_NAME" -c \
-        "INSERT INTO schema_version (version, description, script_name) 
-         VALUES ('$SEED_VERSION', 'Seed data (omitido, datos preexistentes)', 'seed.sql')
-         ON CONFLICT (version) DO NOTHING;" >/dev/null 2>&1
+    if [ -n "$SEED_CHECKSUM" ]; then
+        psql -U "$DB_USER" -p "$DB_PORT" -h "$DB_HOST" -d "$DB_NAME" -c \
+            "INSERT INTO schema_version (script_name, type, checksum, description)
+             VALUES ('seed.sql', 'seed', '$SEED_CHECKSUM', 'Seed data (omitido, datos preexistentes)')
+             ON CONFLICT (script_name, checksum) DO NOTHING;" >/dev/null 2>&1
+    fi
     exit 0
 fi
 
@@ -105,13 +124,15 @@ psql -U "$DB_USER" -p "$DB_PORT" -h "$DB_HOST" -d "$DB_NAME" -f "$SEED_PATH" 2>&
 if [ $? -eq 0 ]; then
     log_success "Seed ejecutado correctamente"
     
-    # Registrar versión del seed
-    psql -U "$DB_USER" -p "$DB_PORT" -h "$DB_HOST" -d "$DB_NAME" -c \
-        "INSERT INTO schema_version (version, description, script_name) 
-         VALUES ('$SEED_VERSION', 'Seed data inicial', 'seed.sql')
-         ON CONFLICT (version) DO NOTHING;" >/dev/null 2>&1
-    
-    log_success "Seed versión $SEED_VERSION registrado"
+    # Registrar checksum del seed aplicado
+    if [ -n "$SEED_CHECKSUM" ]; then
+        psql -U "$DB_USER" -p "$DB_PORT" -h "$DB_HOST" -d "$DB_NAME" -c \
+            "INSERT INTO schema_version (script_name, type, checksum, description)
+             VALUES ('seed.sql', 'seed', '$SEED_CHECKSUM', 'Seed data inicial')
+             ON CONFLICT (script_name, checksum) DO NOTHING;" >/dev/null 2>&1
+        
+        log_success "Seed checksum registrado: $SEED_CHECKSUM"
+    fi
     
     # Reporte de datos insertados
     ROL_COUNT=$(check_table_has_data "rol")
