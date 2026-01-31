@@ -39,10 +39,15 @@ services:
     restart: always
     ports:
       - "${REDIS_PORT:-6379}:6379"
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
     volumes:
       - redis_data:/data 
-      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
-    command: ["redis-server", "/usr/local/etc/redis/redis.conf", "--requirepass", "${REDIS_PASSWORD}"]
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
+      - ./redis/init-scripts/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh:ro
+      - ./redis/init-scripts:/docker-entrypoint-initdb.d:ro
+      - ./redis/seeds:/seeds
+    entrypoint: ["/bin/sh", "/usr/local/bin/docker-entrypoint.sh"]
     healthcheck:
       test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "PING"]
       interval: 30s
