@@ -87,22 +87,27 @@ Esta es tu guía principal. Busca información aquí primero según tu necesidad
 
 ## 🎯 Datos de Prueba — Redis MVP
 
-**¿Necesitas cargar datos de prueba?** Sigue la guía completa en [docs/01-setup-local.md](docs/01-setup-local.md#-redis---datos-de-prueba-generación-y-carga)
+**Redis se inicializa automáticamente con datos de prueba al levantar Docker Compose.**
 
-**Quick reference:**
 ```bash
-# 1. Generar 200 usuarios + 25 puntos en Suchiapa, Chiapas
-cd docker/redis/init-scripts/
-bash generate-seed-data.sh
-
-# 2. Iniciar Redis
-docker compose -f ../../docker.compose.yml up -d redis
-
-# 3. Cargar en Redis
-bash load-redis.sh redis 6379 redis_dev_pass_456
+docker compose -f docker/docker.compose.yml --env-file .env up -d
 ```
 
-✅ **Resultado:** 200 usuarios distribuidos geográficamente con búsquedas geoespaciales O(log N)
+✅ **Resultado:** 200 usuarios distribuidos geográficamente en Suchiapa, Chiapas con búsquedas geoespaciales O(log N)
+
+El contenedor Redis:
+- Verifica si está vacío (solo se carga una vez)
+- Genera 200 usuarios + 25 puntos automáticamente
+- Carga datos sin intervención manual
+
+**Regeneración manual (si necesitas limpiar datos):**
+```bash
+# 1. Detener y limpiar volumen Redis
+docker compose -f docker/docker.compose.yml down -v
+
+# 2. Reiniciar (se auto-carga nuevamente)
+docker compose -f docker/docker.compose.yml up -d
+```
 
 📖 **Documentación técnica:**
 - [docs/01-setup-local.md](docs/01-setup-local.md#-redis---datos-de-prueba-generación-y-carga) — Guía completa de generación y carga
