@@ -300,7 +300,26 @@ docker compose -f docker/docker.compose.yml --env-file .env up -d
 ### 📍 Ubicación Base
 **Suchiapa, Chiapas, México** (16.5896°N, -93.0547°W)
 
-### Generación Rápida (3 pasos)
+### ✨ Inicialización Automática
+
+**Redis se inicializa automáticamente con 200 usuarios al levantar Docker Compose.**
+
+```bash
+docker compose -f docker/docker.compose.yml --env-file .env up -d redis
+```
+
+El contenedor:
+1. ✅ Inicia Redis en background
+2. ✅ Verifica si está vacío (DBSIZE = 0)
+3. ✅ Genera un archivo de datos si no existe
+4. ✅ Carga 200 usuarios + 25 puntos automáticamente
+5. ✅ Reinicia Redis en foreground
+
+**No necesitas ejecutar scripts manualmente.** Los datos se cargan solo si Redis está vacío.
+
+### Generación Manual (opcional)
+
+Si necesitas regenerar los datos:
 
 ```bash
 # 1. Generar 200 usuarios + 25 puntos de recolección
@@ -310,7 +329,7 @@ bash generate-seed-data.sh
 # 2. Asegurar que Redis está corriendo
 docker compose -f ../../docker.compose.yml up -d redis
 
-# 3. Cargar datos
+# 3. Cargar datos manualmente
 bash load-redis.sh redis 6379 redis_dev_pass_456
 ```
 
