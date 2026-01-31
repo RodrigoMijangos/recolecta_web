@@ -11,7 +11,20 @@ set -e
 # Configuración
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SEEDS_DIR="$SCRIPT_DIR/../seeds"
-SEED_FILE="$SEEDS_DIR/redis-seed.txt"
+
+# Buscar el archivo seed más reciente
+if [[ -L "$SEEDS_DIR/redis-seed-latest.txt" ]]; then
+    # Usar symlink si existe
+    SEED_FILE="$SEEDS_DIR/redis-seed-latest.txt"
+else
+    # Buscar el más reciente por timestamp
+    SEED_FILE=$(ls -t "$SEEDS_DIR"/redis-seed_v1_*.txt 2>/dev/null | head -1)
+    
+    # Fallback a nombre genérico
+    if [[ -z "$SEED_FILE" ]]; then
+        SEED_FILE="$SEEDS_DIR/redis-seed.txt"
+    fi
+fi
 
 # Parámetros
 REDIS_HOST="${1:-localhost}"
@@ -50,36 +63,63 @@ echo "[$(date '+%Y-%m-%d %H:%M:%S')] ✓ Conexión a Redis establecida" >&2
 # $REDIS_CMD FLUSHDB
 
 # Procesar y ejecutar comandos del seed
-echo "[$(date '+%Y-%m-%d %H:%M:%S')] Cargando comandos Redis..." >&2
-
-# Filtrar comentarios y líneas vacías, luego enviar a redis-cli en modo pipeline
-grep -v '^#' "$SEED_FILE" | grep -v '^[[:space:]]*$' | $REDIS_CMD --pipe > /dev/null 2>&1
-
-# Alternativamente, ejecutar línea por línea para mejor control
+# Mostrar mensajes por colección y resumen al final
+COLLECTION=""
+COLLECTION_COUNTS=()
+COLLECTION_ORDER=()
 LINE_COUNT=0
 ERROR_COUNT=0
 
 while IFS= read -r line; do
+    # Detectar inicio de colección
+    if [[ "$line" =~ ^#\ =+ ]]; then
+        # Extraer nombre de colección si está en la línea siguiente
+        read -r nextline
+        if [[ "$nextline" =~ ^#\ (.+) ]]; then
+            NEW_COLLECTION="${nextline#\# }"
+            if [[ "$COLLECTION" != "$NEW_COLLECTION" ]]; then
+                COLLECTION="$NEW_COLLECTION"
+                COLLECTION_ORDER+=("$COLLECTION")
+                COLLECTION_COUNTS["$COLLECTION"]=0
+                echo "[$(date '+%Y-%m-%d %H:%M:%S')] --- Cargando colección: $COLLECTION ---" >&2
+            fi
+        fi
+        continue
+    fi
     # Saltar comentarios y líneas vacías
     [[ "$line" =~ ^# ]] && continue
     [[ -z "$line" ]] && continue
     
-    # Ejecutar comando
+    # Ejecutar comando y suprimir salida
     if ! eval "$REDIS_CMD $line" > /dev/null 2>&1; then
         ERROR_COUNT=$((ERROR_COUNT + 1))
     fi
     LINE_COUNT=$((LINE_COUNT + 1))
-    
-    # Mostrar progreso cada 50 comandos
-    if (( LINE_COUNT % 50 == 0 )); then
+    if [[ -n "$COLLECTION" ]]; then
+        COLLECTION_COUNTS["$COLLECTION"]=$(( ${COLLECTION_COUNTS["$COLLECTION"]:-0} + 1 ))
+    fi
+    # Mostrar progreso cada 500 comandos
+    if (( LINE_COUNT % 500 == 0 )); then
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Procesados $LINE_COUNT comandos..." >&2
     fi
+    # Mensaje al finalizar cada 1000 comandos
+    if (( LINE_COUNT % 1000 == 0 )); then
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] ✓ Tanda de $LINE_COUNT comandos cargada" >&2
+    fi
+
 done < "$SEED_FILE"
 
-echo "[$(date '+%Y-%m-%d %H:%M:%S')] ✓ Carga completada" >&2
-echo "[$(date '+%Y-%m-%d %H:%M:%S')] Estadísticas:" >&2
-echo "   - Comandos procesados: $LINE_COUNT" >&2
-echo "   - Errores: $ERROR_COUNT" >&2
+# Resumen por colección
+for col in "${COLLECTION_ORDER[@]}"; do
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] ✓ $col: ${COLLECTION_COUNTS[$col]:-0} comandos cargados" >&2
+fi
+
+# Mensaje final
+if (( ERROR_COUNT == 0 )); then
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] ✓ Carga línea a línea completada sin errores" >&2
+else
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] ⚠ Carga completada con $ERROR_COUNT errores" >&2
+fi
 
 # Obtener estadísticas finales
 DBSIZE=$($REDIS_CMD DBSIZE | grep -oP '(?<=:)\d+')

@@ -15,7 +15,10 @@ set -e
 # Configuración
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SEEDS_DIR="$SCRIPT_DIR/../seeds"
-OUTPUT_FILE="$SEEDS_DIR/redis-seed_v1.txt"
+OUTPUT_FILE="$SEEDS_DIR/redis-seed_v1_$(date '+%Y%m%d_%H%M%S').txt"
+
+# Crear symlink al archivo más reciente
+LATEST_LINK="$SEEDS_DIR/redis-seed-latest.txt"
 
 # Coordenadas base de Suchiapa, Chiapas
 BASE_LAT="16.5896"
@@ -218,7 +221,11 @@ echo "# ================================================================" >> "$O
 
 echo "HSET seed:metadata generated_at $(date +%s) generator_version 1.0 total_users 200 total_points 25 total_routes 5" >> "$OUTPUT_FILE"
 
+# Crear symlink al archivo más reciente
+ln -sf "$(basename "$OUTPUT_FILE")" "$LATEST_LINK"
+
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] ✓ Seed generado exitosamente en: $OUTPUT_FILE" >&2
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] ✓ Symlink creado: redis-seed-latest.txt" >&2
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] ✓ Estadísticas:" >&2
 echo "   - 200 usuarios (IDs 100-299)" >&2
 echo "   - 8 colonias distribuidas" >&2
