@@ -58,19 +58,57 @@ docker compose -f docker/docker.compose.yml --env-file .env up -d
 
 ---
 
-## 📖 Documentación Específica
+## � Documentación Central
 
-Para documentación completa según tu rol:
+Esta es tu guía principal. Busca información aquí primero según tu necesidad:
 
-| Rol / Caso de Uso | Enlace |
-|------------------|--------|
-| 👤 **Usuarios** | [frontend/README.md](frontend/README.md) |
-| 👨‍💻 **Desarrolladores (Frontend)** | [frontend/README.md](frontend/README.md) |
-| 👨‍💻 **Desarrolladores (Backend)** | [gin-backend/README.md](gin-backend/README.md) |
-| 🔧 **DevOps / Setup Local** | [docs/01-setup-local.md](docs/01-setup-local.md) |
-| 🗄️ **Database Operations** | [docs/02-database-operations.md](docs/02-database-operations.md) |
-| 🧪 **Testing - PostgreSQL** | [docs/testing/postgres-tests.md](docs/testing/postgres-tests.md) |
-| 🧪 **Testing - Redis** | [docs/testing/redis-tests.md](docs/testing/redis-tests.md) |
+### 🔧 Configuración e Instalación
+- **[01-setup-local.md](docs/01-setup-local.md)** — Setup completo de desarrollo local, Redis, troubleshooting
+
+### 📊 Bases de Datos
+- **[02-database-operations.md](docs/02-database-operations.md)** — Operaciones PostgreSQL y migraciones
+- **[03-redis-operations.md](docs/03-redis-operations.md)** — Casos de uso reales y benchmarks
+- **[04-redis-schema.md](docs/04-redis-schema.md)** — Estructura completa de datos en Redis (10 secciones)
+- **[05-data-lifecycle.md](docs/05-data-lifecycle.md)** — Flujos de datos y operaciones Redis (7 flujos completos)
+
+
+### 🧪 Testing y Validación
+- **[testing/postgres-tests.md](docs/testing/postgres-tests.md)** — Suite de tests PostgreSQL
+- **[testing/redis-tests.md](docs/testing/redis-tests.md)** — Healthchecks de Redis
+
+### 🚀 Desarrollo
+- **[frontend/README.md](frontend/README.md)** — Frontend (React + TypeScript + Vite)
+- **[gin-backend/README.md](gin-backend/README.md)** — Backend (Go + Gin)
+
+### 📋 Cambios y Versiones
+- **[CHANGELOG.md](CHANGELOG.md)** — Historial de cambios por versión
+
+---
+
+## 🎯 Datos de Prueba — Redis MVP
+
+**¿Necesitas cargar datos de prueba?** Sigue la guía completa en [docs/01-setup-local.md](docs/01-setup-local.md#-redis---datos-de-prueba-generación-y-carga)
+
+**Quick reference:**
+```bash
+# 1. Generar 200 usuarios + 25 puntos en Suchiapa, Chiapas
+cd docker/redis/init-scripts/
+bash generate-seed-data.sh
+
+# 2. Iniciar Redis
+docker compose -f ../../docker.compose.yml up -d redis
+
+# 3. Cargar en Redis
+bash load-redis.sh redis 6379 redis_dev_pass_456
+```
+
+✅ **Resultado:** 200 usuarios distribuidos geográficamente con búsquedas geoespaciales O(log N)
+
+📖 **Documentación técnica:**
+- [docs/01-setup-local.md](docs/01-setup-local.md#-redis---datos-de-prueba-generación-y-carga) — Guía completa de generación y carga
+- [docs/04-redis-schema.md](docs/04-redis-schema.md) — Estructura de datos
+- [docs/05-data-lifecycle.md](docs/05-data-lifecycle.md) — Flujos de datos
+- [docs/03-redis-operations.md](docs/03-redis-operations.md) — Casos de uso reales
 
 ---
 
@@ -176,4 +214,4 @@ Este proyecto está bajo licencia **MIT**. Ver [LICENSE](LICENSE) para más deta
 
 ---
 
-**Última actualización:** 20 de Enero de 2026 | **Versión:** 0.1.0-alpha
+**Última actualización:** 30 de Enero de 2026 | **Versión:** 0.5.0-alpha
