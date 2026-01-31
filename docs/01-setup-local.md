@@ -295,13 +295,86 @@ docker compose -f docker/docker.compose.yml --env-file .env up -d
 
 ---
 
+## � Redis - Datos de Prueba (Generación y Carga)
+
+### 📍 Ubicación Base
+**Suchiapa, Chiapas, México** (16.5896°N, -93.0547°W)
+
+### Generación Rápida (3 pasos)
+
+```bash
+# 1. Generar 200 usuarios + 25 puntos de recolección
+cd docker/redis/init-scripts/
+bash generate-seed-data.sh
+
+# 2. Asegurar que Redis está corriendo
+docker compose -f ../../docker.compose.yml up -d redis
+
+# 3. Cargar datos
+bash load-redis.sh redis 6379 redis_dev_pass_456
+```
+
+✅ **Resultado:** 200 usuarios distribuidos geográficamente con búsquedas geoespaciales O(log N)
+
+### Verificación
+```bash
+# Validar integridad de datos
+bash verify-redis.sh redis 6379 redis_dev_pass_456
+
+# Esperado: 12 validaciones verdes ✓
+```
+
+### Datos Generados
+| Entidad | Cantidad | Detalles |
+|---------|----------|----------|
+| Usuarios | 200 | IDs 100-299 con FCM tokens |
+| Colonias | 8 | Distribuidas en Suchiapa |
+| Rutas | 5 | 5 puntos cada una = 25 total |
+| Comandos Redis | ~3000 | En `docker/redis/seeds/redis-seed.txt` |
+
+### Estructura de Scripts
+```
+docker/redis/init-scripts/
+├── generate-seed-data.sh    # Genera datos realistas
+├── load-redis.sh            # Carga en Redis
+├── verify-redis.sh          # Valida integridad
+└── init-if-empty.sh         # Para Docker automático
+```
+
+### Búsquedas Geoespaciales
+```bash
+# Conectarse a Redis
+redis-cli -h localhost -p 6379 -a redis_dev_pass_456
+
+# Usuarios a 1km de Suchiapa
+GEORADIUS users:geo 16.5896 -93.0547 1 km WITHCOORD WITHDIST
+
+# Distancia entre dos usuarios
+GEODIST users:geo user:100 user:101 km
+```
+
+### Limpieza y Reinicio
+```bash
+# ADVERTENCIA: Borra todos los datos
+redis-cli FLUSHDB
+
+# Regenerar
+bash generate-seed-data.sh
+bash load-redis.sh redis 6379 redis_dev_pass_456
+```
+
+---
+
 ## 📚 Documentación Relacionada
 
 - **BD Operations:** [02-database-operations.md](02-database-operations.md) — dump, restore, seed
+- **Redis Schema:** [04-redis-schema.md](04-redis-schema.md) — estructura completa de datos
+- **Redis Lifecycle:** [05-data-lifecycle.md](05-data-lifecycle.md) — flujos de datos y operaciones
+- **Redis Casos de Uso:** [03-redis-operations.md](03-redis-operations.md) — benchmarks y ejemplos
 - **Frontend:** [../frontend/README.md](../frontend/README.md) — React development
 - **Backend:** [../gin-backend/README.md](../gin-backend/README.md) — Go API development
 - **Changelog:** [../CHANGELOG.md](../CHANGELOG.md) — historial de cambios
 
 ---
 
-**Última actualización:** 27 de Enero de 2026
+**Última actualización:** 30 de Enero de 2026
