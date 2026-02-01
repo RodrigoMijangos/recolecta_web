@@ -1,15 +1,12 @@
-#!/bin/bash
+#!/bin/sh
 # ============================================================================
 # verify-redis.sh - Verificador de integridad de datos en Redis
 # ============================================================================
 # Valida que todos los datos fueron cargados correctamente
 # Uso: ./verify-redis.sh [redis-host] [redis-port] [redis-password]
 # ============================================================================
-
-set -e
-
 # Configuración
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 SEEDS_DIR="$SCRIPT_DIR/../seeds"
 
 # Parámetros
@@ -27,7 +24,7 @@ NC='\033[0m' # No Color
 # Construir comando redis-cli
 REDIS_CMD="redis-cli -h $REDIS_HOST -p $REDIS_PORT -n $REDIS_DB"
 
-if [[ -n "$REDIS_PASSWORD" ]]; then
+if [ -n "$REDIS_PASSWORD" ]; then
     REDIS_CMD="$REDIS_CMD -a $REDIS_PASSWORD"
 fi
 
@@ -48,8 +45,14 @@ fi
 
 # Test 2: Base de datos no está vacía
 echo -n "[2] Base de datos no vacía... "
-DBSIZE=$($REDIS_CMD DBSIZE | grep -oP '(?<=:)\d+')
-if [[ $DBSIZE -gt 0 ]]; then
+DBSIZE_RAW=$($REDIS_CMD DBSIZE 2>/dev/null || true)
+if [ -n "$DBSIZE_RAW" ] && echo "$DBSIZE_RAW" | grep -q '^[0-9]*$'; then
+    DBSIZE="$DBSIZE_RAW"
+else
+    DBSIZE=$($REDIS_CMD INFO keyspace 2>/dev/null | sed -n 's/.*keys=\([0-9]*\).*/\1/p' | head -1)
+    DBSIZE=${DBSIZE:-0}
+fi
+if [ "$DBSIZE" -gt 0 ]; then
     echo -e "${GREEN}✓${NC} ($DBSIZE claves)"
 else
     echo -e "${RED}✗${NC} (base de datos vacía)"
@@ -59,9 +62,9 @@ fi
 # Test 3: Usuarios GEO Index
 echo -n "[3] Usuarios en GEO Index... "
 USER_COUNT=$($REDIS_CMD ZCARD users:geo 2>/dev/null || echo "0")
-if [[ $USER_COUNT -eq 200 ]]; then
+if [ "$USER_COUNT" -eq 200 ]; then
     echo -e "${GREEN}✓${NC} (200 usuarios)"
-elif [[ $USER_COUNT -gt 0 ]]; then
+elif [ "$USER_COUNT" -gt 0 ]; then
     echo -e "${YELLOW}⚠${NC} ($USER_COUNT usuarios, esperados 200)"
 else
     echo -e "${RED}✗${NC} (0 usuarios)"
@@ -69,9 +72,9 @@ fi
 
 # Test 4: Rutas
 echo -n "[4] Rutas creadas... "
-ROUTE_COUNT=$($REDIS_CMD DBSIZE | grep -oP '(?<=:)\d+')  # Aproximado
-ROUTE_SAMPLE=$($REDIS_CMD EXISTS route:1 route:2 route:3 route:4 route:5 | grep -oP '\d+')
-if [[ $ROUTE_SAMPLE -eq 5 ]]; then
+ROUTE_COUNT=$($REDIS_CMD KEYS 'route:*' 2>/dev/null | wc -l)
+ROUTE_SAMPLE=$($REDIS_CMD EXISTS route:1 route:2 route:3 route:4 route:5 2>/dev/null || echo "0")
+if [ "$ROUTE_SAMPLE" -eq 5 ]; then
     echo -e "${GREEN}✓${NC} (5 rutas)"
 else
     echo -e "${YELLOW}⚠${NC} (verificar manualmente)"
@@ -79,9 +82,9 @@ fi
 
 # Test 5: Puntos por ruta
 echo -n "[5] Puntos de recolección por ruta... "
-for RUTA_ID in {1..5}; do
+for RUTA_ID in $(seq 1 5); do
     PUNTO_COUNT=$($REDIS_CMD ZCARD points:ruta:$RUTA_ID 2>/dev/null || echo "0")
-    if [[ $PUNTO_COUNT -eq 5 ]]; then
+    if [ "$PUNTO_COUNT" -eq 5 ]; then
         echo -n -e "${GREEN}$RUTA_ID✓${NC} "
     else
         echo -n -e "${YELLOW}$RUTA_ID($PUNTO_COUNT)${NC} "
@@ -92,7 +95,7 @@ echo ""
 # Test 6: Hash de usuarios
 echo -n "[6] Datos de usuarios (HASH)... "
 SAMPLE_USER=$($REDIS_CMD HGETALL user:100 | wc -l)
-if [[ $SAMPLE_USER -gt 0 ]]; then
+if [ "$SAMPLE_USER" -gt 0 ]; then
     echo -e "${GREEN}✓${NC} (usuario:100 tiene datos)"
     $REDIS_CMD HGETALL user:100 | sed 's/^/      /'
 else
@@ -102,9 +105,9 @@ fi
 # Test 7: FCM Tokens
 echo -n "[7] FCM Tokens... "
 FCM_SAMPLE=$($REDIS_CMD HGET user:100 fcm_token 2>/dev/null || echo "")
-if [[ ! -z "$FCM_SAMPLE" ]]; then
+if [ -n "$FCM_SAMPLE" ]; then
     echo -e "${GREEN}✓${NC}"
-    echo "      Muestra: ${FCM_SAMPLE:0:30}..."
+    echo "      Muestra: $(echo "$FCM_SAMPLE" | cut -c1-30)..."
 else
     echo -e "${RED}✗${NC}"
 fi
@@ -113,7 +116,7 @@ fi
 echo -n "[8] Coordenadas de usuarios... "
 LAT=$($REDIS_CMD HGET user:100 lat 2>/dev/null || echo "")
 LON=$($REDIS_CMD HGET user:100 lon 2>/dev/null || echo "")
-if [[ ! -z "$LAT" && ! -z "$LON" ]]; then
+if [ ! -z "$LAT" && ! -z "$LON" ]; then
     echo -e "${GREEN}✓${NC}"
     echo "      Usuario 100: Lat=$LAT, Lon=$LON"
 else
@@ -123,7 +126,7 @@ fi
 # Test 9: Historial
 echo -n "[9] Historial de vaciados... "
 HISTORY_COUNT=$($REDIS_CMD LLEN historial:vaciado:1:1 2>/dev/null || echo "0")
-if [[ $HISTORY_COUNT -gt 0 ]]; then
+if [ "$HISTORY_COUNT" -gt 0 ]; then
     echo -e "${GREEN}✓${NC} ($HISTORY_COUNT registros)"
 else
     echo -e "${YELLOW}⚠${NC} (no hay registros)"
@@ -132,7 +135,7 @@ fi
 # Test 10: Notificaciones
 echo -n "[10] Configuración de notificaciones... "
 NOTIF_METRICS=$($REDIS_CMD HEXISTS notification:metrics total_sent 2>/dev/null || echo "0")
-if [[ $NOTIF_METRICS -eq 1 ]]; then
+if [ "$NOTIF_METRICS" -eq 1 ]; then
     echo -e "${GREEN}✓${NC}"
 else
     echo -e "${YELLOW}⚠${NC}"
@@ -141,7 +144,7 @@ fi
 # Test 11: Camiones
 echo -n "[11] Estado de camiones... "
 TRUCK_STATE=$($REDIS_CMD HEXISTS truck:1:state ruta_id 2>/dev/null || echo "0")
-if [[ $TRUCK_STATE -eq 1 ]]; then
+if [ "$TRUCK_STATE" -eq 1 ]; then
     echo -e "${GREEN}✓${NC}"
 else
     echo -e "${YELLOW}⚠${NC}"
@@ -150,7 +153,7 @@ fi
 # Test 12: Metadata
 echo -n "[12] Metadata del seed... "
 METADATA=$($REDIS_CMD HEXISTS seed:metadata generated_at 2>/dev/null || echo "0")
-if [[ $METADATA -eq 1 ]]; then
+if [ "$METADATA" -eq 1 ]; then
     echo -e "${GREEN}✓${NC}"
     $REDIS_CMD HGETALL seed:metadata | sed 's/^/      /'
 else
