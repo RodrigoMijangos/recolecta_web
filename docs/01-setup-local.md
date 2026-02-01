@@ -82,7 +82,7 @@ docker compose -f docker/docker.compose.yml --env-file .env up -d
 
 Ver logs:
 ```bash
-docker compose --env-file .env -f docker/docker.compose.yml logs -f
+docker compose -f docker/docker.compose.yml --env-file .env logs -f
 ```
 
 ---
@@ -111,7 +111,7 @@ docker compose --env-file .env -f docker/docker.compose.yml exec -T database \
 ```bash
 # Reemplaza <password> con tu REDIS_PASSWORD
 docker compose --env-file .env -f docker/docker.compose.yml exec redis \
-  redis-cli -a <password> PING
+  REDISCLI_AUTH=<password> redis-cli PING
 # Debería responder: PONG
 ```
 
@@ -183,39 +183,37 @@ ENVIRONMENT=development             # development | production
 docker compose -f docker/docker.compose.yml --env-file .env up -d
 
 # Ver estado
-docker compose --env-file .env -f docker/docker.compose.yml ps
+docker compose -f docker/docker.compose.yml --env-file .env ps
 
 # Detener (sin eliminar datos)
-docker compose --env-file .env -f docker/docker.compose.yml down
+docker compose -f docker/docker.compose.yml --env-file .env down
 
 # Detener y eliminar TODOS los datos
-docker compose --env-file .env -f docker/docker.compose.yml down -v
+docker compose -f docker/docker.compose.yml --env-file .env down -v
 ```
 
 ### Logs
 ```bash
 # Todos los servicios
-docker compose --env-file .env -f docker/docker.compose.yml logs -f
-
+docker compose -f docker/docker.compose.yml --env-file .env logs -f
 # Solo PostgreSQL
-docker compose --env-file .env -f docker/docker.compose.yml logs -f database
+docker compose -f docker/docker.compose.yml --env-file .env logs -f database
 
 # Últimas 50 líneas
-docker compose --env-file .env -f docker/docker.compose.yml logs --tail=50 database
+docker compose -f docker/docker.compose.yml --env-file .env logs --tail=50 database
 ```
 
 ### Acceso a contenedores
 ```bash
 # Shell en PostgreSQL
-docker compose --env-file .env -f docker/docker.compose.yml exec database sh
-
+docker compose -f docker/docker.compose.yml --env-file .env exec database sh
 # psql en PostgreSQL
-docker compose --env-file .env -f docker/docker.compose.yml exec -T database \
+docker compose -f docker/docker.compose.yml --env-file .env exec -T database \
   psql -U <usuario> -d <nombre_db>
 
 # Redis CLI
-docker compose --env-file .env -f docker/docker.compose.yml exec redis \
-  redis-cli -a <password>
+docker compose -f docker/docker.compose.yml --env-file .env exec redis \
+  REDISCLI_AUTH=<password> redis-cli
 ```
 
 ### Limpieza
@@ -362,8 +360,9 @@ docker/redis/init-scripts/
 
 ### Búsquedas Geoespaciales
 ```bash
-# Conectarse a Redis
-redis-cli -h localhost -p 6379 -a redis_dev_pass_456
+# Conectarse a Redis (método seguro con variable de entorno)
+export REDISCLI_AUTH="redis_dev_pass_456"
+redis-cli -h localhost -p 6379
 
 # Usuarios a 1km de Suchiapa
 GEORADIUS users:geo 16.5896 -93.0547 1 km WITHCOORD WITHDIST
@@ -375,6 +374,7 @@ GEODIST users:geo user:100 user:101 km
 ### Limpieza y Reinicio
 ```bash
 # ADVERTENCIA: Borra todos los datos
+export REDISCLI_AUTH="redis_dev_pass_456"
 redis-cli FLUSHDB
 
 # Regenerar
