@@ -1,0 +1,85 @@
+name: Validate PR source branch and signatures
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+  validate:
+    name: Validate
+    if: ${{ github.event.pull_request.draft == false && github.event.pull_request.base.ref == 'develop' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate branch name pattern
+        shell: bash
+        run: |
+          echo "Head ref: ${{ github.event.pull_request.head.ref }}"
+          if [[ ! "${{ github.event.pull_request.head.ref }}" =~ ^issue/[0-9]+$ ]]; then
+            echo "Branch name does not match required pattern: issue/[0-9]+"
+            exit 1
+          fi
+
+      - name: Fetch base and head commits
+        shell: bash
+        run: |
+          # ensure both SHAs are present locally
+          git fetch origin ${{ github.event.pull_request.base.sha }} || true
+          git fetch origin ${{ github.event.pull_request.head.sha }} || true
+          git fetch --no-tags --prune --unshallow origin || true
+
+      - name: Verify commit signatures via GitHub API
+        id: verify_commits
+        shell: bash
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.number }}
+        run: |
+          owner=${REPO%%/*}
+          repo=${REPO#*/}
+          echo "Fetching commits for PR #$PR_NUMBER from $owner/$repo"
+          commits_json=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/$owner/$repo/pulls/$PR_NUMBER/commits")
+          bad=0
+          bad_list=""
+          while read -r obj; do
+            sha=$(echo "$obj" | jq -r '.sha')
+            verified=$(echo "$obj" | jq -r '.commit.verification.verified')
+            reason=$(echo "$obj" | jq -r '.commit.verification.reason')
+            if [ "$verified" != "true" ]; then
+              bad=$((bad+1))
+              bad_list="$bad_list$sha - $verified ($reason)\n"
+              echo "Commit $sha verification: $verified ($reason)"
+            else
+              echo "Commit $sha verified: $verified"
+            fi
+          done < <(echo "$commits_json" | jq -c '.[]')
+          echo "bad=$bad" >> $GITHUB_OUTPUT
+          echo "bad_list<<EOF" >> $GITHUB_OUTPUT
+          echo -e "$bad_list" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Comment on PR when verification fails
+        if: steps.verify_commits.outputs.bad != '0'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.number }}
+        run: |
+          owner=${REPO%%/*}
+          repo=${REPO#*/}
+          BAD=${{ steps.verify_commits.outputs.bad }}
+          BAD_LIST="${{ steps.verify_commits.outputs.bad_list }}"
+          body="⚠️ $BAD commit(s) are not verified by GitHub:\n\n$BAD_LIST"
+          echo "Posting comment on PR #$PR_NUMBER"
+          curl -s -H "Authorization: token $GITHUB_TOKEN" -X POST -d "{\"body\": \"$body\"}" "https://api.github.com/repos/$owner/$repo/issues/$PR_NUMBER/comments" >/dev/null
+          echo "Comment posted"
+      
+
+      - name: Success
+        run: echo "Branch pattern and commit signatures OK"

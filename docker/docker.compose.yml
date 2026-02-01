@@ -3,6 +3,8 @@ services:
     image: postgres:16-alpine
     container_name: postgres_db
     restart: always
+    env_file:
+      - ../.env
     ports:
       - "${DB_PORT:-5432}:5432"
     environment:
@@ -10,21 +12,51 @@ services:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
     volumes:
-      - postgres_data:/var/lib/postgresql/data 
+      - postgres_data:/var/lib/postgresql/data
+      # Evitamos que el entrypoint ejecute directamente el SQL (lo ejecuta el wrapper)
+      - ../gin-backend/db_script.sql:/docker-entrypoint-initdb.d/db_script.sql.skip:ro
+      # Seed fuera del backend
+      - ./postgresql/seeds/seed.sql:/docker-entrypoint-initdb.d/seed.sql.skip:ro
+      # Scripts utilitarios (no se autoejecutan, ubicados fuera del initdb)
+      - ./postgresql/init-scripts/init_seeding.sh:/usr/local/bin/init_seeding.sh:ro
+      - ./postgresql/init-scripts/init_dump.sh:/usr/local/bin/init_dump.sh:ro
+      # Carpeta de dumps persistidos en host
+      - ./postgresql/dumps:/dumps
+      # Ejecutar wrapper en init (asegúrate de LF en el repo)
+      - ./postgresql/init-scripts/init-database.sh:/docker-entrypoint-initdb.d/00-init-database.sh:ro
+      # Ejecutar seed con versioning después del init
+      - ./postgresql/init-scripts/seed-if-empty.sh:/docker-entrypoint-initdb.d/01-seed-if-empty.sh:ro
     networks:
       - app_internal_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME} -h 127.0.0.1 -p 5432 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 10s
 
   redis:
     image: redis:7.2-alpine
     container_name: redis_cache
     restart: always
+    env_file:
+      - ../.env
     ports:
       - "${REDIS_PORT:-6379}:6379"
     environment:
-      REDIS_PASSWORD: ${REDIS_PASSWORD:-redis-default-pass}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
     volumes:
       - redis_data:/data 
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis-default-pass}
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
+      - ./redis/init-scripts/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh:ro
+      - ./redis/init-scripts:/docker-entrypoint-initdb.d:ro
+      - ./redis/seeds:/seeds
+    entrypoint: ["/bin/sh", "/usr/local/bin/docker-entrypoint.sh"]
+    healthcheck:
+      test: ["CMD-SHELL", "REDISCLI_AUTH=${REDIS_PASSWORD} redis-cli PING || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     networks:
       - app_internal_net
 
@@ -34,6 +66,8 @@ services:
       dockerfile: Dockerfile.nginx
     container_name: nginx_proxy
     restart: always
+    env_file:
+      - ../.env
     ports:
       - "80:80"
       - "443:443"

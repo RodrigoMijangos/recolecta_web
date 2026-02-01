@@ -1,0 +1,196 @@
+# Redis Schema (MVP) - Geolocalización y Notificaciones
+
+Este documento define la estructura de datos en Redis para el MVP. Redis es la fuente de verdad para:
+- Coordenadas geográficas
+- Tokens FCM
+- Estado temporal de camiones
+- Historial temporal de notificaciones
+
+PostgreSQL NO se usa para coordenadas ni FCM. Redis es el único repositorio para datos geoespaciales.
+
+---
+
+## Objetivos de diseño
+
+1) Búsqueda geoespacial rápida (radio 100m/200m)
+2) Evitar duplicados de notificaciones por estado
+3) Trazabilidad mínima de estado del camión
+4) Persistencia clara: permanentes vs temporales
+5) Compatible con los datos base del seed de PostgreSQL
+
+---
+
+## Convenciones de claves
+
+- Prefijo por entidad: user, route, point, truck, notification, metrics
+- Separador con dos puntos: `:`
+- Fechas en formato `YYYY-MM-DD`
+
+---
+
+## Datos permanentes (sin TTL)
+
+### 1) Usuarios (FCM + metadatos)
+
+**Key:** `user:{user_id}`
+**Type:** HASH
+**Fields:**
+- `fcm_token` (string)
+- `fcm_status` (string: valid | invalid | expired)
+- `fcm_expiry` (ISO 8601 o epoch)
+- `updated_at` (ISO 8601)
+
+**Ejemplo:**
+- `user:100` → { fcm_token: "...", fcm_status: "valid", fcm_expiry: "2026-02-15T00:00:00Z" }
+
+
+### 2) Índice geoespacial de usuarios
+
+**Key:** `users:geo`
+**Type:** GEO (internamente es ZSET)
+**Members:** `user_id`
+**Score:** lat/lon
+
+**Uso:** búsquedas por radio desde coordenadas del camión.
+
+
+### 3) Puntos de ruta (coordenadas)
+
+**Key:** `point:{punto_id}`
+**Type:** HASH
+**Fields:**
+- `route_id` (int)
+- `lat` (float)
+- `lon` (float)
+- `label` (string, referencia humana)
+
+
+### 4) Orden de puntos por ruta (lineal)
+
+**Key:** `route:points:{ruta_id}`
+**Type:** LIST
+**Value:** lista ordenada de `punto_id`
+
+**Uso:** representar la ruta como vector dirigido A→B→C.
+
+---
+
+## Datos temporales (con TTL)
+
+### 5) Última ubicación / estado del camión
+
+**Key:** `truck:state:{camion_id}`
+**Type:** HASH
+**Fields:**
+- `lat` (float)
+- `lon` (float)
+- `timestamp` (ISO 8601)
+- `state` (WARN | ARRIVAL | DEPARTURE | COMEBACK)
+- `route_id` (int)
+
+**TTL:** 24h
+
+
+### 6) Historial diario de puntos visitados
+
+**Key:** `truck:route:history:{camion_id}:{date}`
+**Type:** LIST
+**Value:** `punto_id` en orden visitado
+
+**TTL:** 24h
+
+
+### 7) Control de notificaciones por estado
+
+**Key:** `notification:sent:{user_id}:{camion_id}:{date}`
+**Type:** SET
+**Members:** WARN, ARRIVAL, DEPARTURE, COMEBACK
+
+**TTL:** 24h
+
+**Objetivo:** evitar duplicidad por estado en el mismo día.
+
+
+### 8) Log de notificaciones por usuario
+
+**Key:** `notification:log:{user_id}`
+**Type:** SORTED SET
+**Member:** `notification:{notification_id}`
+**Score:** epoch timestamp
+
+**TTL:** 7 días
+
+
+### 9) Detalle de notificación
+
+**Key:** `notification:{notification_id}`
+**Type:** HASH
+**Fields:**
+- `type` (WARN | ARRIVAL | DEPARTURE | COMEBACK)
+- `status` (pending | delivered | failed)
+- `camion_id` (int)
+- `point_id` (int)
+- `timestamp` (ISO 8601)
+
+**TTL:** 7 días
+
+---
+
+## Métricas (opcional MVP)
+
+### 10) Métricas diarias por camión
+
+**Key:** `metrics:notifications:{camion_id}:{date}`
+**Type:** HASH
+**Fields:**
+- `total_sent`
+- `warn_count`
+- `arrival_count`
+- `departure_count`
+- `comeback_count`
+- `delivery_success`
+- `delivery_failed`
+
+**TTL:** 7 días
+
+---
+
+## Relación con el seed de PostgreSQL
+
+El seed actual define:
+- 5 rutas (`ruta_id` 1..5)
+- 25 puntos (`punto_id` 1..25)
+- 5 asignaciones ruta-camión (`camion_id` 1..5)
+- 200 usuarios ciudadanos (`user_id` 100..299)
+
+**Implicación para Redis:**
+- Crear `route:points:{1..5}` con 5 puntos cada una
+- Crear `point:{1..25}` con coordenadas reales
+- Crear `user:{100..299}` con FCM tokens
+- Agregar todos los `user_id` al índice `users:geo`
+
+---
+
+## Validaciones mínimas
+
+- `users:geo` debe contener al menos 200 usuarios
+- Cada `route:points:{id}` debe tener 5 elementos
+- Cada `point:{id}` debe tener `lat/lon` válidos
+- Cada `user:{id}` debe tener `fcm_token`
+
+---
+
+## Reglas de negocio clave
+
+- Un usuario recibe máximo 1 notificación por estado por día
+- GEO es el índice espacial; la información del usuario vive en HASH
+- Coordenadas no se duplican en HASH (solo en GEO)
+- Rutas son lineales: LIST ordenada sin bifurcaciones
+
+---
+
+## Notas de implementación
+
+- Los datos permanentes en Redis se cargan al iniciar el entorno
+- Los datos temporales expiran por TTL y se regeneran automáticamente
+- GEO y HASH deben actualizarse juntos cuando cambie el domicilio del usuario

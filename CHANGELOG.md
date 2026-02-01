@@ -4,47 +4,132 @@
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y el proyecto sigue [Versionado Semántico](https://semver.org/lang/es/).
 
+Referencias de como usarlo: [Guia del Changelog](./CHANGELOG.md#-guía-del-changelog)
+
 ---
+# 0.7.0-alpha - 2026-01-31
+## Rodrigo Mijangos [Issue #5](https://github.com/RodrigoMijangos/recolecta_web/issues/5)
+### Added
+- Script de validación cruzada entre PostgreSQL y Redis.
+- Script de reset ligero que ejecuta init scripts dentro de contenedores.
 
-## ## 0.2.0-alpha - 2026-01-20
+### Changed
+- Autenticación redis-cli usando REDISCLI_AUTH (más segura, elimina warnings).
+- Salida de scripts Redis simplificada (stdout solo estados, detalles en stderr).
+- Seeds Redis con metadata + checksum, evitando regeneraciones innecesarias.
+- Healthcheck de Redis actualizado para auth segura.
 
-### Agregado
+### Docs
+- Ejemplos actualizados para conexion en redis-cli con auth.
+
+# 0.6.0-alpha - 2026-01-30
+## Rodrigo Mijangos [Issue #40](https://github.com/RodrigoMijangos/recolecta_web/issues/26)
+### Added
+- Documentación del schema de Redis para geolocalización y notificaciones en `docs/04-redis-schema.md`.
+- Documentacion del ciclo de vida de notificaciones FCM en `docs/05-fcm-notification-lifecycle.md`.
+- Script de generacion de datos de prueba para redis.
+- Script de carga de datos de prueba en redis.
+- Script de verificación de integridad de datos en redis.
+- Documentación de casos de uso de Redis en `docs/03-redis-operations.md`.
+
+### Changed
+- Archivo compose para developmet environment.
+- Cambio de archivo `env.example` para variables más intuitivas.
+- Documentacion general en Readme.md sobre Redis y enlaces a documentación técnica.
+- Documentacion de suite de tests de Redis en `docs/testing/redis-tests.md`.
+
+# 0.5.0-alpha - 2026-01-30
+## Rodrigo Mijangos [Issue #40](https://github.com/RodrigoMijangos/recolecta_web/issues/40)
+### Added
+- Healthcheck para servicio de postgresql.
+- Test para verificación funcional de CRUD básico en postgresql.
+- Test para verificacion de schema y seeding en postgresql.
+- Test para verificación de persistencia de datos tras reinicio de contenedor intencionado.
+- Documentación de suite de tests de postgresql en `docs/testing/postgres-tests.md`.
+
+### Changed
+- Actualización de comandos en documentación para levantar servicios con docker compose v2.
+- Explicación del uso de `--env-file` en docker compose para evitar warnings de variables de entorno.
+- `init-database.sh` ahora utiliza una tabla de control con checksum para validar que schema y seeding se ha aplicado recientemente.
+- `seed-if-empty.sh` ahora inserta su checksum en la tabla de control tras insertar datos.
+- Cambios menores de documentacion general.
+
+### Fixed
+- Restauración de carpeta `docs/` que fue eliminada accidentalmente por cherry-pick en issue #33.
+- Cherry-pick del commit `3a526dd` (de issue #34) para recuperar documentación estructurada.
+- Cherry-pick del commit `e25b7bd` para recuperar documentación de tests de Redis.
+
+### Notes
+- Los archivos recuperados incluyen:
+  - `docs/01-setup-local.md` 
+  - `docs/02-database-operations.md`
+  - `docs/testing/redis-tests.md` - Documenta suite de tests de Redis
+- Esta restauración asegura que toda la documentación eliminada sea recuperada.
+- Conflictos en README.md y .gitignore resueltos manteniendo versiones actuales.
+
+# 0.4.0-alpha - 2026-01-27
+## Rodrigo Mijangos [Issue #33](https://github.com/RodrigoMijangos/recolecta_web/issues/33)
+### Added
+- Scripts de inicialización de base de datos en Docker.
+- Scripts de seed automático de base de datos en Docker.
+- Scripts para dump y restore de base de datos en Docker.
+- Creación de Seeders para tablas principales.
+- Gitattributes para manejo de archivos sensibles a fin de línea.
+
+### Changed
+- Configuración de Docker Compose para PostgreSQL.
+- Configuración de la persistencia de Datos de PostgreSQL.
+
+# 0.3.0-alpha - 2026-01-27
+## Rodrigo Mijangos [Issue #34](https://github.com/RodrigoMijangos/recolecta_web/issues/34)
+### Added
+- Documentación inicial para operaciones de base de datos con Docker.
+- Documentación de setup local con Docker Compose.
+- Documentación de testing local para redis.
+- Documentación de seeding automático de base de datos.
+- Documentación de estructura del proyecto.
+- Documentación de orquestación con Docker Compose.
+- Documentación de configuración de variables de entorno.
+- Documentación de requisitos previos para desarrollo local.
+- Documentación de quick start para levantar ambiente local.
+- Documentación de enlaces rápidos para setup local y operaciones de base de datos.
+
+## 0.2.0-alpha - 2026-01-20
+
+### Added
 - Se agrega información util para nuevos desarrolladores.
 - Información sobre como ejecutar contenedores de Docker.
 - Información sobre los servicios de docker.
 - Quickstart.
 
-### Cambiado
+### Changed
 - Información que muestra README.md actualizada.
 - Configuración de Docker Compose actualizada.
 - Redis requiere una contraseña de manera obligatoria.
-
-### Eliminado
-- 
-
+  
 ---
 
 ## 0.1.0-alpha - 2026-01-20
 
-### Agregado
+### Added
 - Submódulo del **frontend** integrado al repositorio
 - Submódulo del **backend** (Gin) integrado al repositorio
 - Configuración de **Docker Compose** para desarrollo
 - Configuración de **Docker Compose** para producción
 - Dockerfile personalizado para **Nginx**
 - Archivo `.gitignore` para proteger variables de entorno (`.env`)
-
-### Configurado
 - Archivo `.gitignore` para archivos `.env`
 - Docker Compose de desarrollo con servicios base
 - Docker Compose de producción optimizado
 - Configuración temporal para ejecutar Docker en desarrollo
 - Archivo de configuración `.gitignore` refinado para ignorar docs y scripts auxiliares
 
-### Eliminado
+### Removed
 - Archivo de ejemplo para Docker Compose
 
 ---
+
+[Volver Arriba](#-changelog)
 
 ## 📖 Guía del Changelog
 
@@ -54,13 +139,12 @@ Cada versión está dividida en **categorías** que te ayudan a identificar qué
 
 | Categoría | Significa | Ejemplo |
 |-----------|-----------|---------|
-| **🆕 Agregado** | Nuevas funcionalidades | Nueva página de login |
-| **🔧 Configurado** | Cambios en configuración | Actualización de variables de entorno |
-| **✏️ Cambiado** | Cambios en funcionalidad existente | Refactor de componentes |
-| **🐛 Arreglado** | Bug fixes | Corrección de error en validación |
-| **🗑️ Eliminado** | Código o archivos removidos | Componentes deprecados |
-| **⚠️ Deprecado** | Features que pronto desaparecerán | Método antiguo que será reemplazado |
-| **🔒 Seguridad** | Parches de seguridad | Actualización de dependencias críticas |
+| **Added** | Nuevas funcionalidades | Nueva página de login |
+| **Changed** | Cambios en funcionalidad existente | Refactor de componentes |
+| **Deprecated** | Features que pronto desaparecerán | Método antiguo que será reemplazado |
+| **Removed** | Código o archivos removidos | Componentes deprecados |
+| **Fixed** | Bug fixes | Corrección de error en validación |
+| **Security** | Parches de seguridad | Actualización de dependencias críticas |
 
 ### 🏗️ Cómo Mantenerlo
 
@@ -69,18 +153,40 @@ Cada vez que hagas cambios importantes, **debes actualizar el changelog** ANTES 
 #### En Desarrollo (rama activa)
 
 ```markdown
-## [Sin liberar]
+## [Unreleased]
 
-### 🆕 Agregado
+### Added
 - Nueva funcionalidad X
 
-### 🐛 Arreglado
+### Fixed
 - Bug en el componente Y
 ```
 
+#### 📝 Guía de Traducción: Commits → Changelog
+
+Usa esta tabla para decidir si un commit debe ir al changelog y cómo categorizarlo:
+
+| Tipo Commit | ¿Va al Changelog? | Categoría | Ejemplo |
+|-------------|-------------------|-----------|---------|
+| `feat:` | ✅ Sí | **Added** | `feat: agregar notificaciones FCM` → `Added: Sistema de notificaciones FCM` |
+| `fix:` | ✅ Sí | **Fixed** | `fix: corregir cálculo de radio` → `Fixed: Cálculo de radio en geolocalización` |
+| `perf:` | ✅ Sí | **Changed** | `perf: optimizar consultas Redis` → `Changed: Optimización de consultas geoespaciales` |
+| `refactor:` | ⚠️ Solo si es significativo | **Changed** | `refactor: reestructurar módulo rutas` → `Changed: Reestructuración de módulo de rutas` |
+| `docs:` | ⚠️ Solo si es importante | **Added/Changed** | `docs: agregar guía Redis` → `Added: Documentación de schema Redis` |
+| `chore:` | ❌ No (generalmente) | - | `chore: actualizar deps` → (no va al changelog) |
+| `test:` | ❌ No | - | `test: agregar tests unitarios` → (no va al changelog) |
+| `style:` | ❌ No | - | `style: formatear código` → (no va al changelog) |
+| `build:` | ❌ No | - | `build: actualizar Dockerfile` → (no va al changelog) |
+| `ci:` | ❌ No | - | `ci: configurar GitHub Actions` → (no va al changelog) |
+
+**Reglas:**
+- Si el cambio **afecta al usuario o desarrollador**, va al changelog
+- Si es solo interno/mantenimiento, NO va
+- Traduce commits técnicos a lenguaje claro para el changelog
+
 #### ✅ Al Hacer Release
 
-1. **Reemplaza `[Sin liberar]` con la versión** en formato `X.Y.Z`
+1. **Reemplaza `[Unreleased]` con la versión** en formato `X.Y.Z`
 2. **Añade la fecha** en formato `YYYY-MM-DD`
 3. **Crea un nuevo tag** en Git
 
@@ -147,9 +253,9 @@ git log $(git describe --tags --abbrev=0)..HEAD --oneline
 ### ✍️ Al Hacer Cambios
 
 1. **Trabaja en tu rama** (ej: `feature/nueva-funcionalidad`)
-2. **Actualiza el changelog** en la sección `[Sin liberar]`
+2. **Actualiza el changelog** en la sección `[Unreleased]`
 3. **Sé descriptivo** pero conciso:
-   - ✅ `Agregado: Modal de confirmación en validación de rutas`
+   - ✅ `Added: Modal de confirmación en validación de rutas`
    - ❌ `fixed stuff`
 
 ### 🔍 Antes de hacer un Pull Request
@@ -166,7 +272,7 @@ cat CHANGELOG.md
 
 ```bash
 # 1. Actualizar versión en package.json (frontend)
-# 2. Reemplazar [Sin liberar] en CHANGELOG.md
+# 2. Reemplazar [Unreleased] en CHANGELOG.md
 # 3. Hacer commit
 git commit -am "chore: release v0.2.0"
 
