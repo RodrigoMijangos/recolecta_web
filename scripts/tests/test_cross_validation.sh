@@ -124,8 +124,7 @@ postgres_cmd() {
 # Execute Redis command via docker exec
 redis_cmd() {
     if [ -n "$REDIS_PASSWORD" ]; then
-        docker exec "$REDIS_CONTAINER" redis-cli \
-            -a "$REDIS_PASSWORD" \
+        docker exec -e REDISCLI_AUTH="$REDIS_PASSWORD" "$REDIS_CONTAINER" redis-cli \
             -n "$REDIS_DB" \
             "$@" 2>/dev/null
     else

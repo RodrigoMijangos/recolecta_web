@@ -19,14 +19,21 @@ while [ "$#" -gt 0 ]; do
     esac
 done
 
+# If REDIS_PASSWORD present, export REDISCLI_AUTH so redis-cli doesn't need -a
+if [ -n "$REDIS_PASSWORD" ]; then
+    export REDISCLI_AUTH="$REDIS_PASSWORD"
+fi
+
 # Esperar a que Redis esté disponible
-echo "[$(date '+%Y-%m-%d %H:%M:%S')] Esperando a Redis..."
+echo "[ESPERANDO] Esperando a Redis..."
+echo "[DETALLE] Esperando a Redis..." >&2
 for i in $(seq 1 30); do
     if redis-cli -h redis ping > /dev/null 2>&1; then
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] ✓ Redis disponible"
+        echo "[OK] Redis disponible"
+        echo "[DETALLE] Redis respondió al PING" >&2
         break
     fi
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] Intento $i/30..."
+    echo "[DETALLE] Intento $i/30..." >&2
     sleep 1
 done
 
