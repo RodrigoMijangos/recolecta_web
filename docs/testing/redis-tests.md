@@ -17,13 +17,19 @@ scripts/tests/redis/
 ├── test_healthcheck.sh        # Verifica healthcheck en docker-compose
 ├── test_service_startup.sh    # Verifica que el servicio levanta
 ├── test_persistence.sh        # Verifica persistencia AOF
+├── test_seed_integrity.sh     # Verifica integridad del seed (200 usuarios, 25 puntos)
+├── run_test.sh                # Helper para ejecutar tests individuales con contexto correcto
 └── run_all.sh                 # Ejecuta todos los tests
+
+scripts/tests/
+└── test_cross_validation.sh   # Valida consistencia entre PostgreSQL y Redis
 ```
 
 ## Ejecutar tests
 
-### Suite completa
+### Suite completa de Redis
 ```bash
+# Ejecuta todos los tests de Redis (incluye test_seed_integrity)
 bash scripts/tests/redis/run_all.sh
 ```
 
@@ -40,11 +46,24 @@ bash scripts/tests/redis/test_service_startup.sh
 
 # Persistencia
 bash scripts/tests/redis/test_persistence.sh
+
+# Integridad del seed
+bash scripts/tests/redis/test_seed_integrity.sh
+
+# Validación cruzada Postgres ↔ Redis
+bash scripts/tests/test_cross_validation.sh
+```
+
+### Usando el helper run_test.sh
+```bash
+# El helper carga .env y ejecuta desde el directorio correcto
+./scripts/tests/redis/run_test.sh test_seed_integrity
+./scripts/tests/redis/run_test.sh test_seed_integrity --verbose
 ```
 
 ### Desde PowerShell (Windows con WSL)
 ```powershell
-wsl -d Ubuntu bash -c "cd /mnt/c/Users/TU_USUARIO/Documents/GithubProjects/recolecta_web && bash scripts/tests/redis/run_all.sh"
+bash scripts/tests/redis/run_all.sh
 ```
 
 ## Qué verifica cada test
@@ -106,6 +125,142 @@ Container restarted
 Persistence verified: value retrieved successfully (test-data)
 ```
 
+### test_seed_integrity.sh
+Verifica la integridad completa del seed de datos cargado en Redis:
+
+**Validaciones:**
+- ✓ Exactamente 200 usuarios en el índice geoespacial `users:geo`
+- ✓ Al menos 25 puntos de recolección distribuidos en 5 rutas
+- ✓ Estructura correcta de usuarios (nombre, colonia_id, fcm_token, lat, lon)
+- ✓ Estructura correcta de puntos (ruta_id, lat, lon, label)
+- ✓ Metadatos del seed (timestamp, totales)
+
+**Ejecución:**
+```bash
+# Usar configuración de .env
+./scripts/tests/redis/test_seed_integrity.sh
+
+# Con contenedor personalizado
+./scripts/tests/redis/test_seed_integrity.sh --container redis_cache
+
+# Con ayuda
+./scripts/tests/redis/test_seed_integrity.sh --help
+```
+
+**Salida esperada:**
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Redis Seed Integrity Test
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ℹ Configuration: Container='redis_cache' DB=0
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Docker & Redis Connection Test
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ℹ Docker found: Docker version 29.1.2, build 890dcca
+✓ Container 'redis_cache' is running
+✓ Connected to Redis via docker exec
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Users Validation
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ℹ Users in users:geo index: 200 / 200
+✓ User count validation passed
+✓ User 100 structure valid: Usuario_100 (lat=16.58918, lon=-93.05416)
+✓ User 199 structure valid: Usuario_199 (lat=16.60048, lon=-93.05282)
+✓ User 299 structure valid: Usuario_299 (lat=16.56940, lon=-93.04532)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Collection Points Validation
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ℹ Route 1: 5 points
+ℹ Route 2: 5 points
+ℹ Route 3: 5 points
+ℹ Route 4: 5 points
+ℹ Route 5: 5 points
+ℹ Total collection points: 25 / ~25
+✓ Points count validation passed
+✓ Point point:1 structure valid: Route 1 - Punto_1_Centro_Histórico
+✓ Point point:12 structure valid: Route 3 - Punto_12_Las_Palmas
+✓ Point point:25 structure valid: Route 5 - Punto_25_Jardines_del_Valle
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Seed Metadata Validation
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✓ Seed generated at: Sat Jan 31 14:42:38 CST 2026
+✓ Metadata: 200 users, 25 points
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Test Summary
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✓ All seed integrity validations passed!
+
+✓ Exactly 200 users in users:geo
+✓ At least 25 collection points
+✓ All required fields present and valid
+✓ Data structures consistent
+```
+
+**Exit Codes:**
+- `0` - ✅ Todos los tests pasaron
+- `1` - ❌ Validación falló (datos incorrectos/incompletos)
+- `2` - ⚙️ Error de configuración (Docker no disponible, contenedores no corriendo)
+
+### test_cross_validation.sh
+Valida la consistencia de datos entre PostgreSQL y Redis:
+
+**Validaciones:**
+- ✓ Usuarios en Redis (IDs 100-299) existen en PostgreSQL
+- ✓ Colonias referenciadas en Redis existen en PostgreSQL
+- ✓ Rutas referenciadas en Redis existen en PostgreSQL
+- ✓ Coordenadas geográficas son válidas (lat: -90 a 90, lon: -180 a 180)
+
+**Ejecución:**
+```bash
+# Usar configuración de .env
+bash scripts/tests/test_cross_validation.sh
+
+# Con contenedores personalizados
+bash scripts/tests/test_cross_validation.sh --db-container postgres_db --redis-container redis_cache
+```
+
+**Salida esperada:**
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PostgreSQL ↔ Redis Cross-Validation Test
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ℹ PostgreSQL: postgres_db (proyecto_recolecta)
+ℹ Redis: redis_cache
+
+✓ Container 'postgres_db' is running
+✓ Connected to PostgreSQL
+✓ Container 'redis_cache' is running
+✓ Connected to Redis
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Users Consistency Validation
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ℹ PostgreSQL users (IDs 100-299): 200
+ℹ Redis users in users:geo: 200
+✓ User 100 exists in both databases
+✓ User 150 exists in both databases
+✓ User 199 exists in both databases
+
+✓ All cross-validations passed!
+✓ Users in Redis match PostgreSQL
+✓ Colonies referenced exist in PostgreSQL
+✓ Routes referenced exist in PostgreSQL
+✓ Geolocation coordinates valid
+✓ No data inconsistencies detected
+```
+```
+Starting Redis persistence test...
+SET key 'test:persist' with value 'test-data'
+BGSAVE completed
+Container restarted
+Persistence verified: value retrieved successfully (test-data)
+```
+
 ## Salida completa exitosa
 
 ```bash
@@ -128,6 +283,34 @@ Container restarted
 Persistence verified: value retrieved successfully (test-data)
 ==================================
 All tests passed successfully!
+```
+
+## 🛠 Helper Scripts
+
+### run_test.sh
+Script auxiliar para ejecutar tests individuales de forma conveniente sin especificar rutas completas.
+
+**Uso:**
+```bash
+# Ejecutar test individual desde cualquier ubicación
+bash scripts/tests/redis/run_test.sh connection
+
+# Ver tests disponibles
+bash scripts/tests/redis/run_test.sh --help
+```
+
+**Tests disponibles:**
+- `connection` - Verificar conectividad con Redis
+- `persistence` - Verificar persistencia AOF
+- `seed-integrity` - Validar integridad del seed (200 usuarios, 25 puntos)
+
+**Ejemplo de salida:**
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Running Test: connection
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[... output del test ...]
+✓ All tests passed!
 ```
 
 ## Troubleshooting
