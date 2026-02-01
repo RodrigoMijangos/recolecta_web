@@ -3,9 +3,24 @@
 > Todos los cambios importantes en este proyecto están documentados aquí.
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y el proyecto sigue [Versionado Semántico](https://semver.org/lang/es/).
+
 Referencias de como usarlo: [Guia del Changelog](./CHANGELOG.md#-guía-del-changelog)
 
 ---
+# 0.7.0-alpha - 2026-01-31
+## Rodrigo Mijangos [Issue #5](https://github.com/RodrigoMijangos/recolecta_web/issues/5)
+### Added
+- Script de validación cruzada entre PostgreSQL y Redis.
+- Script de reset ligero que ejecuta init scripts dentro de contenedores.
+
+### Changed
+- Autenticación redis-cli usando REDISCLI_AUTH (más segura, elimina warnings).
+- Salida de scripts Redis simplificada (stdout solo estados, detalles en stderr).
+- Seeds Redis con metadata + checksum, evitando regeneraciones innecesarias.
+- Healthcheck de Redis actualizado para auth segura.
+
+### Docs
+- Ejemplos actualizados para conexion en redis-cli con auth.
 
 # 0.6.0-alpha - 2026-01-30
 ## Rodrigo Mijangos [Issue #40](https://github.com/RodrigoMijangos/recolecta_web/issues/26)
