@@ -53,7 +53,7 @@ services:
       - ./redis/seeds:/seeds
     entrypoint: ["/bin/sh", "/usr/local/bin/docker-entrypoint.sh"]
     healthcheck:
-      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "PING"]
+      test: ["CMD-SHELL", "REDISCLI_AUTH=${REDIS_PASSWORD} redis-cli PING || exit 1"]
       interval: 30s
       timeout: 5s
       retries: 3

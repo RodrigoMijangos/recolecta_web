@@ -15,36 +15,34 @@ REDIS_PORT="${2:-6379}"
 REDIS_PASSWORD="${3:-}"
 REDIS_DB="${4:-0}"
 
-# Colores para output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
-
-# Construir comando redis-cli
-REDIS_CMD="redis-cli -h $REDIS_HOST -p $REDIS_PORT -n $REDIS_DB"
-
+# Build secure auth if provided
 if [ -n "$REDIS_PASSWORD" ]; then
-    REDIS_CMD="$REDIS_CMD -a $REDIS_PASSWORD"
+    export REDISCLI_AUTH="$REDIS_PASSWORD"
 fi
 
-echo "========================================================================"
-echo "Verificación de Integridad - Redis Seed"
-echo "========================================================================"
-echo "Host: $REDIS_HOST:$REDIS_PORT | DB: $REDIS_DB"
-echo ""
+# Construir comando redis-cli (no pasar password en args)
+REDIS_CMD="redis-cli -h $REDIS_HOST -p $REDIS_PORT -n $REDIS_DB"
+
+# Concise phase header on stdout, details to stderr
+echo "[VALIDANDO] Verificación de Integridad - Redis Seed"
+echo "[DETALLE] Host: $REDIS_HOST:$REDIS_PORT | DB: $REDIS_DB" >&2
+
+echo "" >&2
 
 # Test 1: Conectividad
-echo -n "[1] Conectividad a Redis... "
+# stdout shows concise phase, stderr has detailed result
+echo -n "[VALIDANDO] Conectividad a Redis... "
 if $REDIS_CMD ping > /dev/null 2>&1; then
-    echo -e "${GREEN}✓${NC}"
+    echo "[OK]"
+    echo "[DETALLE] Redis responde al PING" >&2
 else
-    echo -e "${RED}✗${NC}"
+    echo "[ERROR]"
+    echo "[DETALLE] Redis no responde al PING" >&2
     exit 1
 fi
 
 # Test 2: Base de datos no está vacía
-echo -n "[2] Base de datos no vacía... "
+echo -n "[VALIDANDO] Base de datos no vacía... "
 DBSIZE_RAW=$($REDIS_CMD DBSIZE 2>/dev/null || true)
 if [ -n "$DBSIZE_RAW" ] && echo "$DBSIZE_RAW" | grep -q '^[0-9]*$'; then
     DBSIZE="$DBSIZE_RAW"
@@ -53,9 +51,11 @@ else
     DBSIZE=${DBSIZE:-0}
 fi
 if [ "$DBSIZE" -gt 0 ]; then
-    echo -e "${GREEN}✓${NC} ($DBSIZE claves)"
+    echo "[OK]"
+    echo "[DETALLE] ($DBSIZE claves)" >&2
 else
-    echo -e "${RED}✗${NC} (base de datos vacía)"
+    echo "[ERROR]"
+    echo "[DETALLE] (base de datos vacía)" >&2
     exit 1
 fi
 
