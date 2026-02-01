@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # ============================================================================
 # generate-seed-data.sh - Generador de datos realistas para Redis
 # ============================================================================
@@ -13,7 +13,7 @@
 set -e
 
 # Configuración
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 SEEDS_DIR="$SCRIPT_DIR/../seeds"
 OUTPUT_FILE="$SEEDS_DIR/redis-seed_v1_$(date '+%Y%m%d_%H%M%S').txt"
 
@@ -31,33 +31,36 @@ mkdir -p "$SEEDS_DIR"
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Generando datos de seed para Redis..." >&2
 
 # ============================================================================
-# 1. DEFINICIÓN DE COLONIAS CON OFFSETS REALISTAS (en grados decimales)
+# 1. DEFINICIÓN DE COLONIAS (usando variables indexadas)
 # ============================================================================
-# Offsets calculados manualmente (km a grados: 1km ≈ 0.009 grados)
-# Formato: colonia_id|nombre|lat_offset|lon_offset
-
-declare -A COLONIAS=(
-    ["1"]="Centro Histórico|0.0|0.0"              # Centro exacto (16.5896, -93.0547)
-    ["2"]="Colonia Industrial|0.015|-0.012"       # +1.67km N, -1.33km W
-    ["3"]="Las Palmas|0.018|0.008"                # +2km N, +0.89km E
-    ["4"]="Vista Hermosa|-0.020|0.010"            # -2.22km S, +1.11km E
-    ["5"]="Jardines del Valle|-0.025|-0.015"      # -2.78km S, -1.67km W
-    ["6"]="El Mirador|-0.008|0.015"               # -0.89km S, +1.67km E
-    ["7"]="Residencial San Miguel|0.022|-0.005"   # +2.44km N, -0.56km W
-    ["8"]="Fraccionamiento Los Pinos|-0.012|-0.020" # -1.33km S, -2.22km W
-)
+# Colonias como variables (en sh puro, simular arrays)
+COLONIA_1="Centro Histórico|0.0|0.0"
+COLONIA_2="Colonia Industrial|0.015|-0.012"
+COLONIA_3="Las Palmas|0.018|0.008"
+COLONIA_4="Vista Hermosa|-0.020|0.010"
+COLONIA_5="Jardines del Valle|-0.025|-0.015"
+COLONIA_6="El Mirador|-0.008|0.015"
+COLONIA_7="Residencial San Miguel|0.022|-0.005"
+COLONIA_8="Fraccionamiento Los Pinos|-0.012|-0.020"
 
 # ============================================================================
-# 2. DEFINICIÓN DE RUTAS (5 rutas, expandidas)
+# 2. DEFINICIÓN DE RUTAS
 # ============================================================================
-# Estructura: ruta_id|nombre|colonias_asociadas|turno|zona
-declare -A RUTAS=(
-    ["1"]="Ruta Centro A|1,6|matutino|Centro"
-    ["2"]="Ruta Centro B|1,6|vespertino|Centro"
-    ["3"]="Ruta Norte|2,3,7|matutino|Norte"
-    ["4"]="Ruta Sur|4,5,8|matutino|Sur"
-    ["5"]="Ruta Sur Tarde|4,5,8|vespertino|Sur"
-)
+RUTA_1="Ruta Centro A|1,6|matutino|Centro"
+RUTA_2="Ruta Centro B|1,6|vespertino|Centro"
+RUTA_3="Ruta Norte|2,3,7|matutino|Norte"
+RUTA_4="Ruta Sur|4,5,8|matutino|Sur"
+RUTA_5="Ruta Sur Tarde|4,5,8|vespertino|Sur"
+
+# Función auxiliar para obtener colonia
+get_colonia() {
+    eval "echo \"\$COLONIA_$1\""
+}
+
+# Función auxiliar para obtener ruta
+get_ruta() {
+    eval "echo \"\$RUTA_$1\""
+}
 
 # ============================================================================
 # 3. GENERACIÓN DE PUNTOS DE RECOLECCIÓN (25 total, 5 por ruta)
@@ -67,34 +70,33 @@ echo "# PUNTOS DE RECOLECCIÓN (GEO Index)" >> "$OUTPUT_FILE"
 echo "# ================================================================" >> "$OUTPUT_FILE"
 
 PUNTO_ID=1
-for RUTA_ID in {1..5}; do
-    IFS='|' read -r RUTA_NAME COLONIAS_STR TURNO ZONA <<< "${RUTAS[$RUTA_ID]}"
+for RUTA_ID in $(seq 1 5); do
+    RUTA_DATA=$(get_ruta "$RUTA_ID")
+    RUTA_NAME=$(echo "$RUTA_DATA" | cut -d'|' -f1)
+    COLONIAS_STR=$(echo "$RUTA_DATA" | cut -d'|' -f2)
+    TURNO=$(echo "$RUTA_DATA" | cut -d'|' -f3)
+    ZONA=$(echo "$RUTA_DATA" | cut -d'|' -f4)
     
-    # Distribuir 5 puntos por ruta
-    for ((i=0; i<5; i++)); do
-        # Obtener colonia de la ruta (rotar entre colonias de la ruta)
-        IFS=',' read -ra COLONIA_ARR <<< "$COLONIAS_STR"
-        COLONIA_IDX=$((i % ${#COLONIA_ARR[@]}))
-        COLONIA_ID=${COLONIA_ARR[$COLONIA_IDX]}
+    for i in $(seq 0 4); do
+        COLONIA_IDX=$((i % $(echo "$COLONIAS_STR" | tr ',' '\n' | wc -l) + 1))
+        COLONIA_ID=$(echo "$COLONIAS_STR" | cut -d',' -f$COLONIA_IDX)
         
-        IFS='|' read -r COLONIA_NAME LAT_OFFSET LON_OFFSET <<< "${COLONIAS[$COLONIA_ID]}"
+        COLONIA_DATA=$(get_colonia "$COLONIA_ID")
+        COLONIA_NAME=$(echo "$COLONIA_DATA" | cut -d'|' -f1)
+        LAT_OFFSET=$(echo "$COLONIA_DATA" | cut -d'|' -f2)
+        LON_OFFSET=$(echo "$COLONIA_DATA" | cut -d'|' -f3)
         
-        # Generar offset pequeño para variación dentro de colonia
         RANDOM_LAT_OFFSET=$((RANDOM % 200 - 100))
         RANDOM_LON_OFFSET=$((RANDOM % 200 - 100))
         
-        # Calcular coordenadas (aproximación sin bc)
         PUNTO_LAT=$(awk "BEGIN {printf \"%.5f\", $BASE_LAT + $LAT_OFFSET + $RANDOM_LAT_OFFSET * 0.00001}")
         PUNTO_LON=$(awk "BEGIN {printf \"%.5f\", $BASE_LON + $LON_OFFSET + $RANDOM_LON_OFFSET * 0.00001}")
         
-        # Punto de recolección código
         CP_CODE="PR-$(printf "%03d" $RUTA_ID)-$(printf "%03d" $((i+1)))"
         
-        # GEO: GEOADD points:by_ruta ruta_id punto_id lon lat
         echo "GEOADD points:ruta:$RUTA_ID $PUNTO_LON $PUNTO_LAT punto:$PUNTO_ID" >> "$OUTPUT_FILE"
         
-        # HASH: datos del punto (replace spaces with underscores)
-        SAFE_COLONIA_NAME="${COLONIA_NAME// /_}"
+        SAFE_COLONIA_NAME=$(echo "$COLONIA_NAME" | tr ' ' '_')
         echo "HSET point:$PUNTO_ID ruta_id $RUTA_ID colonia_id $COLONIA_ID cp_code $CP_CODE label Punto_${PUNTO_ID}_${SAFE_COLONIA_NAME} lat $PUNTO_LAT lon $PUNTO_LON" >> "$OUTPUT_FILE"
         
         PUNTO_ID=$((PUNTO_ID + 1))
@@ -108,50 +110,44 @@ echo "# ================================================================" >> "$O
 echo "# USUARIOS CIUDADANOS (100-299)" >> "$OUTPUT_FILE"
 echo "# ================================================================" >> "$OUTPUT_FILE"
 
-for USER_NUM in {0..199}; do
+for USER_NUM in $(seq 0 199); do
     USER_ID=$((100 + USER_NUM))
     
-    # Asignar usuario a una colonia (distribuir uniformemente)
     COLONIA_ID=$(((USER_NUM % 8) + 1))
-    IFS='|' read -r COLONIA_NAME LAT_OFFSET LON_OFFSET <<< "${COLONIAS[$COLONIA_ID]}"
+    COLONIA_DATA=$(get_colonia "$COLONIA_ID")
+    COLONIA_NAME=$(echo "$COLONIA_DATA" | cut -d'|' -f1)
+    LAT_OFFSET=$(echo "$COLONIA_DATA" | cut -d'|' -f2)
+    LON_OFFSET=$(echo "$COLONIA_DATA" | cut -d'|' -f3)
     
-    # Generar offset del usuario dentro de la colonia
     RANDOM_LAT_OFFSET=$((RANDOM % 300 - 150))
     RANDOM_LON_OFFSET=$((RANDOM % 300 - 150))
     
-    # Calcular coordenada del usuario
     USER_LAT=$(awk "BEGIN {printf \"%.5f\", $BASE_LAT + $LAT_OFFSET + $RANDOM_LAT_OFFSET * 0.00008}")
     USER_LON=$(awk "BEGIN {printf \"%.5f\", $BASE_LON + $LON_OFFSET + $RANDOM_LON_OFFSET * 0.00008}")
     
-    # Generar FCM token válido (formato Base64-like)
     FCM_TOKEN="cI$(printf '%016x' $((RANDOM * RANDOM)))et$(printf '%010d' $RANDOM)=="
     
-    # Timestamp: variado en los últimos 30 días
     CREATION_TS=$((1704067200 + USER_NUM * 3600))
     EXPIRY_TS=$((CREATION_TS + 2592000))
     
-    # GEO: índice geoespacial
     echo "GEOADD users:geo $USER_LON $USER_LAT user:$USER_ID" >> "$OUTPUT_FILE"
     
-    # HASH: datos del usuario
     echo "HSET user:$USER_ID nombre Usuario_${USER_ID} colonia_id $COLONIA_ID fcm_token $FCM_TOKEN fcm_status valid fcm_created_at $CREATION_TS fcm_expires_at $EXPIRY_TS lat $USER_LAT lon $USER_LON" >> "$OUTPUT_FILE"
 done
 
 # ============================================================================
-# 5. GENERACIÓN DE RUTAS Y PUNTOS ORDENADOS (LIST)
+# 5. GENERACIÓN DE RUTAS Y PUNTOS ORDENADOS
 # ============================================================================
 echo "# ================================================================" >> "$OUTPUT_FILE"
 echo "# RUTAS: PUNTOS EN ORDEN (Linear Vector)" >> "$OUTPUT_FILE"
 echo "# ================================================================" >> "$OUTPUT_FILE"
 
 PUNTO_ID=1
-for RUTA_ID in {1..5}; do
-    for ((i=1; i<=5; i++)); do
-        # Agregar punto a la lista de ruta
+for RUTA_ID in $(seq 1 5); do
+    for i in $(seq 1 5); do
         echo "RPUSH route:points:$RUTA_ID punto:$PUNTO_ID" >> "$OUTPUT_FILE"
         PUNTO_ID=$((PUNTO_ID + 1))
     done
-    # Metadata de ruta
     echo "HSET route:$RUTA_ID nombre Ruta_$(printf '%02d' $RUTA_ID) total_points 5 status active" >> "$OUTPUT_FILE"
 done
 
@@ -162,7 +158,7 @@ echo "# ================================================================" >> "$O
 echo "# ESTADO DE CAMIONES (Truck State)" >> "$OUTPUT_FILE"
 echo "# ================================================================" >> "$OUTPUT_FILE"
 
-for CAMION_ID in {1..6}; do
+for CAMION_ID in $(seq 1 6); do
     RUTA_ID=$(((CAMION_ID - 1) % 5 + 1))
     PUNTO_ACTUAL=$((CAMION_ID % 5 + 1))
     
@@ -177,7 +173,7 @@ echo "# HISTORIAL DE VACIADOS (24h)" >> "$OUTPUT_FILE"
 echo "# ================================================================" >> "$OUTPUT_FILE"
 
 # Generar 15 registros de vaciado con timestamps variados
-for i in {1..15}; do
+for i in $(seq 1 15); do
     CAMION_ID=$(((i % 6) + 1))
     RELLENO_ID=$(((i % 2) + 1))
     RUTA_ID=$(((i % 5) + 1))
@@ -195,8 +191,8 @@ echo "# ================================================================" >> "$O
 
 # Crear conjuntos de notificaciones enviadas (SET - sin duplicados por día)
 TODAY=$(date +%Y-%m-%d)
-for USER_ID in {100..110}; do  # Primeros 11 usuarios
-    for CAMION_ID in {1..3}; do
+for USER_ID in $(seq 100 110); do  # Primeros 11 usuarios
+    for CAMION_ID in $(seq 1 3); do
         for STATE in "WARN" "ARRIVAL" "DEPARTURE"; do
             # Clave: notification:sent:{user_id}:{camion_id}:{date}:{state}
             echo "SADD notification:sent:$USER_ID:$CAMION_ID:$TODAY:$STATE \"1\"" >> "$OUTPUT_FILE"
@@ -221,6 +217,26 @@ echo "# VALIDACIÓN DEL SEED" >> "$OUTPUT_FILE"
 echo "# ================================================================" >> "$OUTPUT_FILE"
 
 echo "HSET seed:metadata generated_at $(date +%s) generator_version 1.0 total_users 200 total_points 25 total_routes 5" >> "$OUTPUT_FILE"
+
+# Calcular checksum del seed (sin metadata header) y anteponer metadata estricta
+compute_checksum() {
+    if command -v sha256sum >/dev/null 2>&1; then
+        sha256sum "$1" | awk '{print $1}'
+    elif command -v openssl >/dev/null 2>&1; then
+        openssl sha256 "$1" | awk '{print $2}'
+    else
+        md5sum "$1" | awk '{print $1}'
+    fi
+}
+
+CHECKSUM=$(compute_checksum "$OUTPUT_FILE")
+GENERATED_AT=$(date +%s)
+
+# Prepend metadata header (first line) and replace file
+TMP_FINAL="${OUTPUT_FILE}.withmeta"
+echo "# SEED-METADATA: version=1.0 checksum=$CHECKSUM users=200 points=25 routes=5 generated_at=$GENERATED_AT" > "$TMP_FINAL"
+cat "$OUTPUT_FILE" >> "$TMP_FINAL"
+mv "$TMP_FINAL" "$OUTPUT_FILE"
 
 # Crear symlink al archivo más reciente
 ln -sf "$(basename "$OUTPUT_FILE")" "$LATEST_LINK"

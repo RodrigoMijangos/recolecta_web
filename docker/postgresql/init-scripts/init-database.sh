@@ -129,12 +129,10 @@ if database_exists; then
     log_warning "La base de datos '$DB_NAME' ya existe"
     log_info "Ejecutando script desde línea 6 en adelante (omitiendo CREATE DATABASE)..."
     
-    # Ejecutar solo desde línea 6 (omite CREATE DATABASE y \c)
     tail -n +6 "$SCRIPT_PATH" | psql -U "$DB_USER" -p "$DB_PORT" -h "$DB_HOST" -d "$DB_NAME" 2>&1
     
     if [ $? -eq 0 ]; then
         log_success "Script ejecutado exitosamente (modo de actualización)"
-        log_info "Estrategia: PARCIAL (líneas 6+)"
         # Registrar checksum del schema aplicado (modo actualización)
         schema_checksum=$(compute_checksum "$SCRIPT_PATH" || echo "")
         if [ -n "$schema_checksum" ]; then
@@ -159,7 +157,6 @@ else
     
     if [ $? -eq 0 ]; then
         log_success "Script ejecutado exitosamente (primera creación)"
-        log_info "Estrategia: COMPLETA (líneas 1+)"
         # Registrar checksum del schema aplicado (primera creación)
         schema_checksum=$(compute_checksum "$SCRIPT_PATH" || echo "")
         if [ -n "$schema_checksum" ]; then
