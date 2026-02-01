@@ -93,8 +93,9 @@ for RUTA_ID in {1..5}; do
         # GEO: GEOADD points:by_ruta ruta_id punto_id lon lat
         echo "GEOADD points:ruta:$RUTA_ID $PUNTO_LON $PUNTO_LAT punto:$PUNTO_ID" >> "$OUTPUT_FILE"
         
-        # HASH: datos del punto
-        echo "HSET point:$PUNTO_ID ruta_id $RUTA_ID colonia_id $COLONIA_ID cp_code $CP_CODE label \"Punto $PUNTO_ID - $COLONIA_NAME\" lat $PUNTO_LAT lon $PUNTO_LON" >> "$OUTPUT_FILE"
+        # HASH: datos del punto (replace spaces with underscores)
+        SAFE_COLONIA_NAME="${COLONIA_NAME// /_}"
+        echo "HSET point:$PUNTO_ID ruta_id $RUTA_ID colonia_id $COLONIA_ID cp_code $CP_CODE label Punto_${PUNTO_ID}_${SAFE_COLONIA_NAME} lat $PUNTO_LAT lon $PUNTO_LON" >> "$OUTPUT_FILE"
         
         PUNTO_ID=$((PUNTO_ID + 1))
     done
@@ -133,7 +134,7 @@ for USER_NUM in {0..199}; do
     echo "GEOADD users:geo $USER_LON $USER_LAT user:$USER_ID" >> "$OUTPUT_FILE"
     
     # HASH: datos del usuario
-    echo "HSET user:$USER_ID nombre \"Usuario $USER_ID\" colonia_id $COLONIA_ID fcm_token \"$FCM_TOKEN\" fcm_status valid fcm_created_at $CREATION_TS fcm_expires_at $EXPIRY_TS lat $USER_LAT lon $USER_LON" >> "$OUTPUT_FILE"
+    echo "HSET user:$USER_ID nombre Usuario_${USER_ID} colonia_id $COLONIA_ID fcm_token $FCM_TOKEN fcm_status valid fcm_created_at $CREATION_TS fcm_expires_at $EXPIRY_TS lat $USER_LAT lon $USER_LON" >> "$OUTPUT_FILE"
 done
 
 # ============================================================================
@@ -151,7 +152,7 @@ for RUTA_ID in {1..5}; do
         PUNTO_ID=$((PUNTO_ID + 1))
     done
     # Metadata de ruta
-    echo "HSET route:$RUTA_ID nombre \"Ruta $(printf '%02d' $RUTA_ID)\" total_points 5 status active" >> "$OUTPUT_FILE"
+    echo "HSET route:$RUTA_ID nombre Ruta_$(printf '%02d' $RUTA_ID) total_points 5 status active" >> "$OUTPUT_FILE"
 done
 
 # ============================================================================
