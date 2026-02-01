@@ -14,7 +14,7 @@ function dcl { docker compose -f docker/docker.compose.yml logs -f }
 function dcp { docker compose -f docker/docker.compose.yml ps }
 function dcr { docker compose -f docker/docker.compose.yml down -v; docker compose -f docker/docker.compose.yml --env-file .env up -d }
 function dcdb { docker compose -f docker/docker.compose.yml exec database psql -U <usuario> -d <nombre_db> }
-function dcredis { docker compose -f docker/docker.compose.yml exec redis redis-cli -a <tu_contraseña_redis> }
+function dcredis { docker compose -f docker/docker.compose.yml exec redis sh -c 'REDISCLI_AUTH=<tu_contraseña_redis> redis-cli PING' }
 ```
 
 ### Opción 2: Agregar a tu perfil de PowerShell (permanente)
@@ -112,7 +112,7 @@ function dcredis {
     Reemplaza <tu_contraseña_redis> con el valor de tu REDIS_PASSWORD del .env
     #>
     param([string]$Command = "PING")
-    docker compose -f docker/docker.compose.yml exec redis redis-cli -a <tu_contraseña_redis> $Command
+    docker compose -f docker/docker.compose.yml exec redis sh -c 'REDISCLI_AUTH=<tu_contraseña_redis> redis-cli "$Command"'
 }
 
 function dcrestart {
