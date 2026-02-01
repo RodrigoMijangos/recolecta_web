@@ -1,0 +1,57 @@
+name: Validate PR source branch and signatures
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+  validate:
+    name: Validate
+    if: ${{ github.event.pull_request.draft == false }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate branch name pattern
+        shell: bash
+        run: |
+          echo "Head ref: ${{ github.event.pull_request.head.ref }}"
+          if [[ ! "${{ github.event.pull_request.head.ref }}" =~ ^issue/[0-9]+$ ]]; then
+            echo "Branch name does not match required pattern: issue/[0-9]+"
+            exit 1
+          fi
+
+      - name: Fetch base and head commits
+        shell: bash
+        run: |
+          # ensure both SHAs are present locally
+          git fetch origin ${{ github.event.pull_request.base.sha }} || true
+          git fetch origin ${{ github.event.pull_request.head.sha }} || true
+          git fetch --no-tags --prune --unshallow origin || true
+
+      - name: Verify commit signatures
+        shell: bash
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          range="$BASE_SHA..$HEAD_SHA"
+          echo "Checking commits in range: $range"
+          bad=0
+          # %G? -> G = Good, U = Good with unknown, B = Bad, N = No signature, ? = not signed
+          while read -r status sha rest; do
+            if [[ "$status" != "G" ]]; then
+              echo "Commit $sha has signature status: $status"
+              bad=$((bad+1))
+            fi
+          done < <(git log --pretty=format:'%G? %H %s' "$range")
+          if [[ $bad -gt 0 ]]; then
+            echo "$bad commits are not properly signed (expected status 'G')."
+            exit 1
+          fi
+
+      - name: Success
+        run: echo "Branch pattern and commit signatures OK"
