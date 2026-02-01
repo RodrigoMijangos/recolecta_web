@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # ============================================================================
 # docker-entrypoint.sh - Entrypoint personalizado para Redis con auto-seeding
 # ============================================================================
@@ -29,26 +29,24 @@ DBSIZE=$(redis-cli -a "${REDIS_PASSWORD}" DBSIZE 2>/dev/null | grep -o '[0-9]*' 
 if [ "$DBSIZE" -eq 0 ]; then
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] Redis vacío - inicializando datos..."
     
-    # Instalar bash si no existe (Alpine usa sh por defecto)
-    if ! command -v bash >/dev/null 2>&1; then
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Instalando bash..."
-        apk add --no-cache bash
+    # Instalar sh si no existe (Alpine usa sh por defecto)
+    if ! command -v sh >/dev/null 2>&1; then
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Instalando shell..."
+        apk add --no-cache busybox
     fi
     
     # Buscar seed más reciente
     SEED_FILE=""
     if [ -L "/seeds/redis-seed-latest.txt" ]; then
-        # Usar symlink si existe
         SEED_FILE="/seeds/redis-seed-latest.txt"
     else
-        # Buscar el más reciente por nombre (último creado)
         SEED_FILE=$(ls -t /seeds/redis-seed_v1_*.txt 2>/dev/null | head -1)
     fi
     
     # Generar seed si no existe ninguno
     if [ -z "$SEED_FILE" ] || [ ! -f "$SEED_FILE" ]; then
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] No se encontró seed - generando..."
-        bash /docker-entrypoint-initdb.d/generate-seed-data.sh
+        sh /docker-entrypoint-initdb.d/generate-seed-data.sh
         
         # Re-buscar después de generar
         if [ -L "/seeds/redis-seed-latest.txt" ]; then
@@ -62,9 +60,7 @@ if [ "$DBSIZE" -eq 0 ]; then
     if [ -n "$SEED_FILE" ] && [ -f "$SEED_FILE" ]; then
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Cargando datos desde: $(basename "$SEED_FILE")..."
         
-        # Cargar línea por línea, filtrando comentarios
         grep -v '^#' "$SEED_FILE" | grep -v '^$' | while IFS= read -r line; do
-            # Ejecutar comando directamente con xargs para manejar argumentos correctamente
             echo "$line" | xargs redis-cli -a "${REDIS_PASSWORD}" 2>&1 | grep -i "error" || true
         done
         
@@ -84,6 +80,6 @@ fi
 kill $REDIS_PID
 wait $REDIS_PID
 
-# Iniciar Redis en foreground (proceso principal del contenedor)
+# Iniciar Redis en foreground
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Iniciando Redis en modo foreground..."
 exec redis-server /usr/local/etc/redis/redis.conf --requirepass "${REDIS_PASSWORD}"
