@@ -12,19 +12,25 @@ set -e
 redis-server /usr/local/etc/redis/redis.conf --requirepass "${REDIS_PASSWORD}" &
 REDIS_PID=$!
 
+# Ensure REDISCLI_AUTH is set when REDIS_PASSWORD is present
+if [ -n "${REDIS_PASSWORD}" ]; then
+    export REDISCLI_AUTH="${REDIS_PASSWORD}"
+fi
+
 # Esperar a que Redis esté disponible
-echo "[$(date '+%Y-%m-%d %H:%M:%S')] Esperando a Redis..."
+echo "[ESPERANDO] Esperando a Redis..."
 for i in $(seq 1 30); do
-    if redis-cli -a "${REDIS_PASSWORD}" ping > /dev/null 2>&1; then
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] ✓ Redis disponible"
+    if redis-cli ping > /dev/null 2>&1; then
+        echo "[OK] Redis disponible"
+        echo "[DETALLE] Redis respondió al PING" >&2
         break
     fi
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] Intento $i/30..."
+    echo "[DETALLE] Intento $i/30..." >&2
     sleep 1
 done
 
 # Verificar si Redis está vacío
-DBSIZE=$(redis-cli -a "${REDIS_PASSWORD}" DBSIZE 2>/dev/null | grep -o '[0-9]*' || echo "0")
+DBSIZE=$(redis-cli DBSIZE 2>/dev/null | grep -o '[0-9]*' || echo "0")
 
 if [ "$DBSIZE" -eq 0 ]; then
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] Redis vacío - inicializando datos..."
@@ -61,7 +67,7 @@ if [ "$DBSIZE" -eq 0 ]; then
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Cargando datos desde: $(basename "$SEED_FILE")..."
         
         grep -v '^#' "$SEED_FILE" | grep -v '^$' | while IFS= read -r line; do
-            echo "$line" | xargs redis-cli -a "${REDIS_PASSWORD}" 2>&1 | grep -i "error" || true
+            echo "$line" | xargs redis-cli 2>&1 | grep -i "error" || true
         done
         
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] ✓ Carga completada"
@@ -70,8 +76,8 @@ if [ "$DBSIZE" -eq 0 ]; then
     fi
     
     # Verificar carga
-    NEW_DBSIZE=$(redis-cli -a "${REDIS_PASSWORD}" DBSIZE 2>/dev/null | grep -o '[0-9]*')
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] Redis ahora tiene $NEW_DBSIZE claves"
+    NEW_DBSIZE=$(redis-cli DBSIZE 2>/dev/null | grep -o '[0-9]*')
+    echo "[DETALLE] Redis ahora tiene $NEW_DBSIZE claves" >&2"
 else
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] Redis ya contiene datos ($DBSIZE claves) - saltando inicialización"
 fi

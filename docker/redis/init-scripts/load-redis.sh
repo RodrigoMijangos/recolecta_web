@@ -32,30 +32,33 @@ REDIS_PORT="${2:-6379}"
 REDIS_PASSWORD="${3:-}"
 REDIS_DB="${4:-0}"
 
-echo "[$(date '+%Y-%m-%d %H:%M:%S')] Iniciando carga de datos en Redis..." >&2
-echo "[$(date '+%Y-%m-%d %H:%M:%S')] Host: $REDIS_HOST:$REDIS_PORT | DB: $REDIS_DB" >&2
+# Export auth to avoid passing password on command line (safer)
+if [ -n "$REDIS_PASSWORD" ]; then
+    export REDISCLI_AUTH="$REDIS_PASSWORD"
+fi
+
+# Concise status on stdout, detailed info on stderr
+echo "[CARGANDO] Iniciando carga de datos en Redis..."
+echo "[DETALLE] Host: $REDIS_HOST:$REDIS_PORT | DB: $REDIS_DB" >&2
 
 # Validar que el archivo existe
 if [ ! -f "$SEED_FILE" ]; then
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] ✗ ERROR: archivo de seed no encontrado: $SEED_FILE" >&2
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] Ejecute primero: generate-seed-data.sh" >&2
+    echo "[ERROR] archivo de seed no encontrado: $SEED_FILE"
+    echo "[DETALLE] Ejecute primero: generate-seed-data.sh" >&2
     exit 1
 fi
 
-# Construir comando redis-cli
+# Construir comando redis-cli (no pasar contraseña en args)
 REDIS_CMD="redis-cli -h $REDIS_HOST -p $REDIS_PORT -n $REDIS_DB"
-
-if [ -n "$REDIS_PASSWORD" ]; then
-    REDIS_CMD="$REDIS_CMD -a $REDIS_PASSWORD"
-fi
 
 # Verificar conectividad
 if ! $REDIS_CMD ping > /dev/null 2>&1; then
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] ✗ ERROR: No se puede conectar a Redis en $REDIS_HOST:$REDIS_PORT" >&2
+    echo "[ERROR] No se puede conectar a Redis en $REDIS_HOST:$REDIS_PORT"
+    echo "[DETALLE] Revise que Redis esté en ejecución y la contraseña (REDIS_PASSWORD)" >&2
     exit 1
 fi
 
-echo "[$(date '+%Y-%m-%d %H:%M:%S')] ✓ Conexión a Redis establecida" >&2
+echo "[OK] Conexión a Redis establecida"
 
 # Procesar y ejecutar comandos del seed
 COLLECTION=""
@@ -70,7 +73,8 @@ while IFS= read -r line; do
             NEW_COLLECTION=$(echo "$nextline" | sed 's/^# //')
             if [ "$COLLECTION" != "$NEW_COLLECTION" ]; then
                 COLLECTION="$NEW_COLLECTION"
-                echo "[$(date '+%Y-%m-%d %H:%M:%S')] --- Cargando colección: $COLLECTION ---" >&2
+                echo "[CARGANDO] --- Cargando colección: $COLLECTION ---"
+                echo "[DETALLE] --- Cargando colección: $COLLECTION ---" >&2
             fi
         fi
         continue
@@ -85,19 +89,19 @@ while IFS= read -r line; do
     LINE_COUNT=$((LINE_COUNT + 1))
     
     if [ $((LINE_COUNT % 500)) -eq 0 ]; then
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Procesados $LINE_COUNT comandos..." >&2
+        echo "[DETALLE] Procesados $LINE_COUNT comandos..." >&2
     fi
     if [ $((LINE_COUNT % 1000)) -eq 0 ]; then
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] ✓ Tanda de $LINE_COUNT comandos cargada" >&2
+        echo "[DETALLE] Tanda de $LINE_COUNT comandos cargada" >&2
     fi
 
 done < "$SEED_FILE"
 
 # Mensaje final
 if [ "$ERROR_COUNT" -eq 0 ]; then
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] ✓ Carga línea a línea completada sin errores" >&2
+    echo "[OK] Carga línea a línea completada sin errores"
 else
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] ⚠ Carga completada con $ERROR_COUNT errores" >&2
+    echo "[ERROR] Carga completada con $ERROR_COUNT errores"
 fi
 
 # Obtener estadísticas finales
@@ -108,20 +112,21 @@ else
     DBSIZE=$($REDIS_CMD INFO keyspace 2>/dev/null | sed -n 's/.*keys=\([0-9]*\).*/\1/p' | head -1)
     DBSIZE=${DBSIZE:-0}
 fi
-echo "[$(date '+%Y-%m-%d %H:%M:%S')] Claves en Redis: $DBSIZE" >&2
+
+echo "[DETALLE] Claves en Redis: $DBSIZE" >&2
 
 # Validación rápida
 USER_COUNT=$($REDIS_CMD ZCARD users:geo 2>/dev/null || echo "0")
 POINT_COUNT=$($REDIS_CMD ZCARD points:ruta:1 2>/dev/null || echo "0")
 
-echo "[$(date '+%Y-%m-%d %H:%M:%S')] Validación:" >&2
-echo "   - Usuarios en GEO: $USER_COUNT (esperados: 200)" >&2
-echo "   - Puntos en ruta 1: $POINT_COUNT (esperados: 5)" >&2
+echo "[DETALLE] Validación:" >&2
+echo "[DETALLE]    - Usuarios en GEO: $USER_COUNT (esperados: 200)" >&2
+echo "[DETALLE]    - Puntos en ruta 1: $POINT_COUNT (esperados: 5)" >&2
 
 if [ "$USER_COUNT" -eq 200 ] && [ "$POINT_COUNT" -eq 5 ]; then
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] ✓ Validación exitosa - Datos cargados correctamente" >&2
+    echo "[OK] Validación exitosa - Datos cargados correctamente"
     exit 0
 else
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] ⚠ Validación parcial - Revisar los datos" >&2
+    echo "[ERROR] Validación parcial - Revisar los datos"
     exit 0
 fi
