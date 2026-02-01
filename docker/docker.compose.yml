@@ -3,6 +3,8 @@ services:
     image: postgres:16-alpine
     container_name: postgres_db
     restart: always
+    env_file:
+      - ../.env
     ports:
       - "${DB_PORT:-5432}:5432"
     environment:
@@ -37,6 +39,8 @@ services:
     image: redis:7.2-alpine
     container_name: redis_cache
     restart: always
+    env_file:
+      - ../.env
     ports:
       - "${REDIS_PORT:-6379}:6379"
     environment:
@@ -62,6 +66,8 @@ services:
       dockerfile: Dockerfile.nginx
     container_name: nginx_proxy
     restart: always
+    env_file:
+      - ../.env
     ports:
       - "80:80"
       - "443:443"
