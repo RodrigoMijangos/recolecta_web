@@ -106,7 +106,7 @@ El contenedor Redis:
 docker compose -f docker/docker.compose.yml down -v
 
 # 2. Reiniciar (se auto-carga nuevamente)
-docker compose -f docker/docker.compose.yml up -d
+docker compose -f docker/docker.compose.yml --env-file .env up -d
 ```
 
 📖 **Documentación técnica:**
@@ -138,10 +138,20 @@ docker compose -f docker/docker.compose.yml --env-file .env up -d --force-recrea
 docker compose -f docker/docker.compose.yml --env-file .env logs -f
 ```
 
+**¿Conectar a Redis de forma segura?**
+```bash
+# Usar variable de entorno en vez de -a (más seguro)
+export REDISCLI_AUTH="tu_contraseña_redis"
+redis-cli -h localhost -p 6379
+```
+
 **¿Validar salud de servicios?**
 ```bash
 # Suite completa de tests PostgreSQL (healthcheck + validación + persistencia)
 bash scripts/tests/postgres/run_all.sh
+
+# Suite completa de tests Redis (healthcheck + validación + persistencia)
+bash scripts/tests/redis/run_all.sh
 
 # Solo healthcheck rápido de PostgreSQL
 bash scripts/tests/postgres/test_healthcheck.sh

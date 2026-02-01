@@ -13,8 +13,11 @@ git submodule update --init --recursive
 cp .env.example .env
 # Abre .env y cambia las contraseñas
 
-# 3. Levantar servicios
-docker compose -f docker/docker.compose.yml --env-file .env up -d
+# 3. Levantar servicios (con wrapper que carga .env automáticamente)
+./docker/docker-compose.sh up -d
+
+# Alternativa: usar docker compose directamente
+# docker compose -f docker/docker.compose.yml up -d
 ```
 
 ## ✅ Verificar que funciona
@@ -24,10 +27,13 @@ docker compose -f docker/docker.compose.yml --env-file .env up -d
 
 ```bash
 # Ver estado
-docker compose -f docker/docker.compose.yml ps
+./docker/docker-compose.sh ps
 
 # Ver logs
-docker compose -f docker/docker.compose.yml logs -f
+./docker/docker-compose.sh logs -f
+
+# Ejecutar tests de integridad
+bash scripts/tests/redis/test_seed_integrity.sh
 ```
 
 ## 🔑 Credenciales (configurables en .env)
@@ -71,7 +77,7 @@ docker compose -f docker/docker.compose.yml --env-file .env up -d
 docker compose -f docker/docker.compose.yml exec database psql -U <usuario> -d <nombre_db>
 
 # Redis CLI (usa tu REDIS_PASSWORD)
-docker compose -f docker/docker.compose.yml exec redis redis-cli -a <tu_contraseña_redis>
+docker compose -f docker/docker.compose.yml exec redis sh -c 'REDISCLI_AUTH=<tu_contraseña_redis> redis-cli PING'
 ```
 
 ## 📚 Documentación Completa
