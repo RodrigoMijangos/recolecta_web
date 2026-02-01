@@ -61,29 +61,14 @@ if [ "$DBSIZE" -eq 0 ]; then
     # Cargar datos
     if [ -n "$SEED_FILE" ] && [ -f "$SEED_FILE" ]; then
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Cargando datos desde: $(basename "$SEED_FILE")..."
-        COLLECTION=""
-        while IFS= read -r line || [ -n "$line" ]; do
-            # Detectar inicio de colección
-            case "$line" in
-                "# ="*)
-                    read -r nextline
-                    case "$nextline" in
-                        "# "*)
-                            COLLECTION="${nextline#\# }"
-                            echo "[$(date '+%Y-%m-%d %H:%M:%S')] --- Cargando colección: $COLLECTION ---"
-                            ;;
-                    esac
-                    continue
-                    ;;
-            esac
-            # Saltar comentarios y líneas vacías
-            case "$line" in
-                "#"*|"") continue ;;
-            esac
-            # Ejecutar comando
-            redis-cli -a "${REDIS_PASSWORD}" $line > /dev/null 2>&1
-        done < "$SEED_FILE"
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] ✓ Carga por colecciones completada"
+        
+        # Cargar línea por línea, filtrando comentarios
+        grep -v '^#' "$SEED_FILE" | grep -v '^$' | while IFS= read -r line; do
+            # Ejecutar comando directamente con xargs para manejar argumentos correctamente
+            echo "$line" | xargs redis-cli -a "${REDIS_PASSWORD}" 2>&1 | grep -i "error" || true
+        done
+        
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] ✓ Carga completada"
     else
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] ⚠ Seed file no encontrado después de generación"
     fi
