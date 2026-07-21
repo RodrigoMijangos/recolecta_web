@@ -1,0 +1,8 @@
+{
+  "name": "stag-clients",
+  "version": "1.0.0",
+  "main": "main.js",
+  "dependencies": {
+    "push-receiver": "^2.1.2"
+  }
+}

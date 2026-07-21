@@ -1,0 +1,146 @@
+version: '3.8'
+
+name: recolecta-stag-fcm-env
+
+services:
+  database-stag-fcm:
+    image: postgres:16-alpine
+    container_name: postgres_db_stag_fcm
+    restart: always
+    env_file:
+      - ../.env
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      DB_SEED_MODE: none
+    volumes:
+      - postgres_data_stag_fcm:/var/lib/postgresql/data
+      - ../gin-backend/db_script.sql:/docker-entrypoint-initdb.d/01-db_script.sql:ro
+      - ../gin-backend/db_constraints.sql:/docker-entrypoint-initdb.d/02-db_constraints.sql:ro
+      - ../gin-backend/db_indexes.sql:/docker-entrypoint-initdb.d/03-db_indexes.sql:ro
+    ports:
+      - "5432:5432"
+    networks:
+      - app_internal_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME} -h 127.0.0.1 -p 5432 || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+  redis-stag-fcm:
+    image: redis:7.2-alpine
+    container_name: redis_cache_stag_fcm
+    restart: always
+    env_file:
+      - ../.env
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    volumes:
+      - redis_data_stag_fcm:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD-SHELL", "REDISCLI_AUTH=${REDIS_PASSWORD} redis-cli PING || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app_internal_net
+
+  backend-stag-fcm:
+    build:
+      context: ../gin-backend
+      dockerfile: Dockerfile.dev
+    container_name: gin_backend_stag_fcm
+    restart: always
+    env_file:
+      - ../.env
+    environment:
+      API_PORT: 8080
+      DB_HOST: database-stag-fcm
+      REDIS_HOST: redis-stag-fcm
+      REDIS_PORT: 6379
+      GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS}
+      FCM_CREDENTIALS_FILE: ${FCM_CREDENTIALS_FILE:-/credentials/firebase_credentials.json}
+    ports:
+      - "8080:8080"
+    volumes:
+      - ../gin-backend:/app
+      - ../credentials:/credentials:ro
+    depends_on:
+      database-stag-fcm:
+        condition: service_healthy
+      redis-stag-fcm:
+        condition: service_healthy
+    networks:
+      - app_internal_net
+
+  proxy-stag-fcm:
+    image: nginx:alpine
+    container_name: nginx_proxy_stag_fcm
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.stag.fcm.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - backend-stag-fcm
+    networks:
+      - app_internal_net
+
+  stag-fcm-clients:
+    build:
+      context: ../scripts/stag-clients
+      dockerfile: Dockerfile
+    container_name: stag_fcm_clients_service
+    restart: always
+    env_file:
+      - ../.env
+    environment:
+      FCM_SENDER_ID: ${FCM_SENDER_ID}
+    volumes:
+      - shared_data_fcm:/shared
+    depends_on:
+      backend-stag-fcm:
+        condition: service_started
+    networks:
+      - app_internal_net
+
+  stag-fcm-seeder:
+    build:
+      context: ../scripts/stag-seeder
+      dockerfile: Dockerfile
+    container_name: stag_fcm_seeder_service
+    env_file:
+      - ../.env
+    environment:
+      DB_HOST: database-stag-fcm
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      REDIS_HOST: redis-stag-fcm
+      REDIS_PORT: 6379
+    volumes:
+      - shared_data_fcm:/shared
+    depends_on:
+      database-stag-fcm:
+        condition: service_healthy
+      redis-stag-fcm:
+        condition: service_healthy
+      stag-fcm-clients:
+        condition: service_started
+    networks:
+      - app_internal_net
+
+volumes:
+  postgres_data_stag_fcm:
+  redis_data_stag_fcm:
+  shared_data_fcm:
+
+networks:
+  app_internal_net:
+    driver: bridge
